@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "bbs_backend"
+version = "0.1.0"
+description = "Django backend for bulletin board system Web application"
+authors = ["rebo <rebo@mahusai.ph>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+Django = "^4.2.2"
+djangorestframework = "^3.14.0"
+django-cors-headers = "^4.1.0"
+pylint = "^2.17.4"
+django-environ = "^0.10.0"
+black = "^23.3.0"
+django-rest-knox = "^4.2.0"
+Pillow = "^9.5.0"
+
+[tool.poetry.dev-dependencies]
+autopep8 = "^2.0.2"
+pep8 = "^1.7.1"
+pylint = "^2.17.4"
+pylint-django = "^2.5.3"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
