@@ -1,10 +1,13 @@
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from knox.auth import AuthToken
+from knox.views import LoginView as KnoxLoginView
 
-from .models import User, Board, Thread, Post
+from .models import CustomUser, Board, Thread, Post
 from .serializers import (
     UserSerializer,
+    LoginSerializer,
     BoardSerializer,
     ThreadSerializer,
     PostSerializer
@@ -12,7 +15,7 @@ from .serializers import (
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
+    queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
 
     @action(detail=False, methods=['post'])
@@ -22,25 +25,13 @@ class UserViewSet(viewsets.ModelViewSet):
             user = serializer.save()
             return Response({'message': 'User registered successfully', 'user_id': user.id})
         return Response(serializer.errors, status=400)
-    
-    @action(detail=False, methods=['post'])
-    def login(self, request):
-        pass
-        # Implement your login logic here
-        # Return appropriate response based on successful or unsuccessful login
-    
-    @action(detail=False, methods=['post'])
-    def logout(self, request):
-        pass
-        # Implement your logout logic here
-        # Return appropriate response based on successful logout
-    
+
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAdminUser])
     def ban(self, request, pk=None):
         user = self.get_object()
         # Implement your ban logic here
         # Return appropriate response based on successful ban
-    
+
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAdminUser])
     def unban(self, request, pk=None):
         user = self.get_object()
@@ -48,7 +39,33 @@ class UserViewSet(viewsets.ModelViewSet):
         # Return appropriate response based on successful unban
 
 
-class BoardViewSet(viewsets.ModelViewset):
+class UserLoginView(KnoxLoginView):
+    permission_classes = []
+
+    def post(self, request, format=None):
+        serializer = LoginSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data["user"]
+        _, token = AuthToken.objects.create(user)
+
+        return Response(
+            {
+                "key": token,
+                "user": {
+                    "pk": user.pk,
+                    "username": user.username,
+                    "first_name": user.name.split()[0],
+                    "last_name": " ".join(user.name.split()[1:])
+                    if len(user.name.split()) > 1
+                    else "",
+                    "email": user.email,
+                    "date_of_birth": user.date_of_birth,
+                },
+            }
+        )
+
+
+class BoardViewSet(viewsets.ModelViewSet):
     queryset = Board.objects.all()
     serializer_class = BoardSerializer
 
