@@ -54,12 +54,7 @@ class UserLoginView(KnoxLoginView):
                 "user": {
                     "pk": user.pk,
                     "username": user.username,
-                    "first_name": user.name.split()[0],
-                    "last_name": " ".join(user.name.split()[1:])
-                    if len(user.name.split()) > 1
-                    else "",
                     "email": user.email,
-                    "date_of_birth": user.date_of_birth,
                 },
             }
         )

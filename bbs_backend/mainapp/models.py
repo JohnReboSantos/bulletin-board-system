@@ -37,6 +37,7 @@ class Poster(models.Model):
 
 class Board(models.Model):
     name = models.CharField(max_length=100)
+    topic = models.CharField(max_length=100)
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 

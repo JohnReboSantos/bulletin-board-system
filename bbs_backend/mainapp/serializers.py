@@ -6,7 +6,7 @@ from .models import CustomUser, Board, Thread, Post
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ('about_myself', 'date_of_birth', 'hometown', 'present_location', 'website', 'gender', 'interests')
+        fields = ('id', 'about_myself', 'date_of_birth', 'hometown', 'present_location', 'website', 'gender', 'interests')
 
 
 class LoginSerializer(serializers.Serializer):
@@ -30,16 +30,16 @@ class LoginSerializer(serializers.Serializer):
 class BoardSerializer(serializers.ModelSerializer):
     class Meta:
         model = Board
-        fields = ('name', 'description', 'created_at')
+        fields = ('id', 'name', 'topic', 'description', 'created_at')
 
 
 class ThreadSerializer(serializers.ModelSerializer):
     class Meta:
         model = Thread
-        fields = ('title', 'board', 'created_by', 'created_at', 'locked')
+        fields = ('id', 'title', 'board', 'created_by', 'created_at', 'locked')
 
 
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = ('thread', 'created_by', 'created_at', 'message')
+        fields = ('id', 'thread', 'created_by', 'created_at', 'message')
