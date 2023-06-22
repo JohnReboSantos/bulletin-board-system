@@ -1,33 +1,46 @@
-import React from 'react';
-import { Button, Card, ListGroup, OverlayTrigger, Tooltip, Navbar } from 'react-bootstrap';
+import React, { useEffect } from 'react';
+import { observer } from 'mobx-react-lite';
+import {
+  Button,
+  Card,
+  ListGroup,
+  OverlayTrigger,
+  Tooltip,
+  Navbar,
+} from 'react-bootstrap';
 import '../App.css';
+import { useStore } from '../stores/RootStore';
 
 const HomePage = () => {
-  const boards = [
-    {
-      id: 1,
-      name: 'Board 1',
-      description: 'This is the description for Board 1',
-      threads: 10,
-      posts: 50,
-    },
-    {
-      id: 2,
-      name: 'Board 2',
-      description: 'This is the description for Board 2',
-      threads: 15,
-      posts: 75,
-    },
-    // Add more boards as needed
-  ];
+  const rootStore = useStore();
 
-  const renderTooltip = (board: any) => (
+  useEffect(() => {
+    const getBoards = async () => {
+      try {
+        await rootStore.boards.getBoards();
+      } catch (error) {
+        console.error('Error getting boards:', error);
+      }
+    };
+
+    getBoards();
+  }, [rootStore.boards]);
+
+  interface Board {
+    id: number;
+    name: string;
+    topic: string;
+    description: string;
+    created_at: string;
+  }
+
+  const renderTooltip = (board: Board) => (
     <Tooltip>
       <Card.Title>{board.name}</Card.Title>
       <Card.Text>{board.description}</Card.Text>
       <ListGroup>
-        <ListGroup.Item>Threads: {board.threads}</ListGroup.Item>
-        <ListGroup.Item>Posts: {board.posts}</ListGroup.Item>
+        <ListGroup.Item>Threads: {/* implement no. threads */}</ListGroup.Item>{' '}
+        <ListGroup.Item>Posts: {/* implement no. of posts */}</ListGroup.Item>{' '}
       </ListGroup>
     </Tooltip>
   );
@@ -46,23 +59,25 @@ const HomePage = () => {
       </Navbar>
 
       <div className="board-list">
-      {boards.map((board) => (
-        <OverlayTrigger
-          key={board.id}
-          placement="bottom"
-          overlay={renderTooltip(board)}
-        >
-          <Card style={{ width: '18rem', margin: '10px' }}>
-            <Card.Body>
-              <Card.Title>{board.name}</Card.Title>
-              <Card.Subtitle className="mb-2 text-muted">Board</Card.Subtitle>
-            </Card.Body>
-          </Card>
-        </OverlayTrigger>
-      ))}
+        {rootStore.boards.boards.map((board) => (
+          <OverlayTrigger
+            key={board.id}
+            placement="bottom"
+            overlay={renderTooltip(board)}
+          >
+            <Card style={{ width: '18rem', margin: '10px' }}>
+              <Card.Body>
+                <Card.Title>{board.name}</Card.Title>
+                <Card.Subtitle className="mb-2 text-muted">
+                  {board.topic}
+                </Card.Subtitle>
+              </Card.Body>
+            </Card>
+          </OverlayTrigger>
+        ))}
       </div>
     </div>
   );
 };
 
-export default HomePage;
+export default observer(HomePage);

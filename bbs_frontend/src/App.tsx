@@ -10,23 +10,21 @@ import BoardPage from './components/BoardPage';
 import ThreadPage from './components/ThreadPage';
 import ProfilePage from './components/ProfilePage';
 
-
 const rootStore = createRootStore();
 
 function App() {
   return (
     <StoreProvider value={rootStore}>
-    <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path="/register" element={<RegistrationPage />} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/board" element={<BoardPage />} />
-      <Route path="/thread" element={<ThreadPage />} />
-      <Route path="/profile" element={<ProfilePage />} />
-    </Routes>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/register" element={<RegistrationPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/board" element={<BoardPage />} />
+        <Route path="/thread" element={<ThreadPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+      </Routes>
     </StoreProvider>
-  )
+  );
 }
 
 export default observer(App);
- 
