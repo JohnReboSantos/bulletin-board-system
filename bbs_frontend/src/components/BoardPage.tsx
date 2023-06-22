@@ -1,52 +1,51 @@
-import React from 'react';
+import React, { useEffect, useCallback, useMemo } from 'react';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../stores/RootStore';
 import { Card, ListGroup, Pagination } from 'react-bootstrap';
 
-const BoardIndexPage = () => {
-  const threads = [
-    {
-      id: 1,
-      title: 'Thread 1',
-      lastReplyDate: '2023-06-01',
-      lastReplierName: 'User A',
-      locked: false,
-    },
-    {
-      id: 2,
-      title: 'Thread 2',
-      lastReplyDate: '2023-06-02',
-      lastReplierName: 'User B',
-      locked: true,
-    },
-    // Add more thread objects as needed
-  ];
+const BoardPage = () => {
+  const rootStore = useStore();
 
-  const renderThreads = () => {
-    return threads.map((thread) => (
+  const getThreads = useCallback(async () => {
+    try {
+      await rootStore.threads.getThreads();
+    } catch (error) {
+      console.error('Error getting threads:', error);
+    }
+  }, [rootStore.threads]);
+
+  useEffect(() => {
+    getThreads();
+  }, [getThreads]);
+
+  const memoizedThreads = useMemo(
+    () => rootStore.threads.threads,
+    [rootStore.threads.threads],
+  );
+
+  const renderThreads = useCallback(() => {
+    return memoizedThreads.map((thread) => (
       <ListGroup.Item key={thread.id}>
         <div className="d-flex justify-content-between align-items-center">
           <div>{thread.title}</div>
           <div>
-            {thread.locked && (
-              <span className="text-danger">Locked</span>
-            )}
+            {thread.locked && <span className="text-danger">Locked</span>}
           </div>
         </div>
         <div className="mt-2">
           <small>
-            Last reply: {thread.lastReplyDate} by {thread.lastReplierName}
+            Last reply: {/* last reply */} by {/* last replier name*/}
           </small>
         </div>
       </ListGroup.Item>
     ));
-  };
+  }, [memoizedThreads]);
 
   return (
     <div className="board-index-page">
       <h2>Board Name</h2>
       <Card>
-        <ListGroup variant="flush">
-          {renderThreads()}
-        </ListGroup>
+        <ListGroup variant="flush">{renderThreads()}</ListGroup>
       </Card>
       <Pagination className="mt-3">
         <Pagination.First />
@@ -62,4 +61,4 @@ const BoardIndexPage = () => {
   );
 };
 
-export default BoardIndexPage;
+export default observer(BoardPage);

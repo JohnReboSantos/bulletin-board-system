@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback, useMemo } from 'react';
 import { observer } from 'mobx-react-lite';
+import { useStore } from '../stores/RootStore';
 import {
   Button,
   Card,
@@ -9,22 +10,26 @@ import {
   Navbar,
 } from 'react-bootstrap';
 import '../App.css';
-import { useStore } from '../stores/RootStore';
 
 const HomePage = () => {
   const rootStore = useStore();
 
-  useEffect(() => {
-    const getBoards = async () => {
-      try {
-        await rootStore.boards.getBoards();
-      } catch (error) {
-        console.error('Error getting boards:', error);
-      }
-    };
-
-    getBoards();
+  const getBoards = useCallback(async () => {
+    try {
+      await rootStore.boards.getBoards();
+    } catch (error) {
+      console.error('Error getting boards:', error);
+    }
   }, [rootStore.boards]);
+
+  useEffect(() => {
+    getBoards();
+  }, [getBoards]);
+
+  const memoizedBoards = useMemo(
+    () => rootStore.boards.boards,
+    [rootStore.boards.boards],
+  );
 
   interface Board {
     id: number;
@@ -34,15 +39,20 @@ const HomePage = () => {
     created_at: string;
   }
 
-  const renderTooltip = (board: Board) => (
-    <Tooltip>
-      <Card.Title>{board.name}</Card.Title>
-      <Card.Text>{board.description}</Card.Text>
-      <ListGroup>
-        <ListGroup.Item>Threads: {/* implement no. threads */}</ListGroup.Item>{' '}
-        <ListGroup.Item>Posts: {/* implement no. of posts */}</ListGroup.Item>{' '}
-      </ListGroup>
-    </Tooltip>
+  const renderTooltip = useCallback(
+    (board: Board) => (
+      <Tooltip>
+        <Card.Title>{board.name}</Card.Title>
+        <Card.Text>{board.description}</Card.Text>
+        <ListGroup>
+          <ListGroup.Item>
+            Threads: {/* implement no. threads */}
+          </ListGroup.Item>{' '}
+          <ListGroup.Item>Posts: {/* implement no. of posts */}</ListGroup.Item>{' '}
+        </ListGroup>
+      </Tooltip>
+    ),
+    [],
   );
 
   return (
@@ -59,7 +69,7 @@ const HomePage = () => {
       </Navbar>
 
       <div className="board-list">
-        {rootStore.boards.boards.map((board) => (
+        {memoizedBoards.map((board) => (
           <OverlayTrigger
             key={board.id}
             placement="bottom"
