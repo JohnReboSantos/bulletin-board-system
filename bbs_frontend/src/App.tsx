@@ -30,6 +30,14 @@ function App() {
     [rootStore.boards.boards],
   );
 
+  const getBoardName = useCallback(
+    (boardId: number) => {
+      const board = memoizedBoards.find((board) => board.id === boardId);
+      return board ? board.name : '';
+    },
+    [memoizedBoards],
+  );
+
   const getThreads = useCallback(async () => {
     try {
       await rootStore.threads.getThreads();
@@ -47,9 +55,6 @@ function App() {
     [rootStore.threads.threads],
   );
 
-  console.log('rootStore.boards.boards:', rootStore.boards.boards);
-  console.log('memoizedBoards:', memoizedBoards);
-
   return (
     <Routes>
       <Route path="/" element={<HomePage boards={memoizedBoards} />} />
@@ -65,7 +70,9 @@ function App() {
       {memoizedThreads.map((thread) => (
         <Route
           key={thread.id}
-          path={`/board_${thread.board}/thread_${thread.title}`}
+          path={`/board_${getBoardName(parseInt(thread.board))}/thread_${
+            thread.title
+          }`}
           element={<ThreadPage thread={thread} />}
         />
       ))}

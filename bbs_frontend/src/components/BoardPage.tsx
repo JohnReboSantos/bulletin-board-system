@@ -51,8 +51,6 @@ const BoardPage: React.FC<{
     getThreads();
   }, [getThreads]);
 
-  console.log('rootStore.threads.threads:', rootStore.threads.threads);
-
   const memoizedThreads = useMemo(
     () => rootStore.threads.threads,
     [rootStore.threads.threads],

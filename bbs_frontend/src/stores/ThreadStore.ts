@@ -21,7 +21,6 @@ export class ThreadStore extends Model({
       );
       const data = yield* _await(response.json());
       this.threads = data;
-      console.log('this.threads = data:', data);
     } catch (error) {
       console.log('Error getting threads:', error);
       this.threads = [];

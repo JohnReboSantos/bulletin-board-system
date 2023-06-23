@@ -27,8 +27,6 @@ const HomePage: React.FC<{
     created_at: string;
   }
 
-  console.log('boards from homepage', boards);
-
   const renderTooltip = useCallback(
     (board: Board) => (
       <Tooltip>

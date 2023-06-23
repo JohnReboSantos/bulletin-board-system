@@ -15,6 +15,33 @@ const ThreadPage: React.FC<{
 }> = ({ thread }) => {
   const rootStore = useStore();
 
+  console.log('thread in ThreadPage:', thread);
+
+  const getThreads = useCallback(async () => {
+    try {
+      await rootStore.threads.getThreads();
+    } catch (error) {
+      console.error('Error getting threads:', error);
+    }
+  }, [rootStore.threads]);
+
+  useEffect(() => {
+    getThreads();
+  }, [getThreads]);
+
+  const memoizedThreads = useMemo(
+    () => rootStore.threads.threads,
+    [rootStore.threads.threads],
+  );
+
+  const getThreadTitle = useCallback(
+    (threadId: number) => {
+      const thread = memoizedThreads.find((thread) => thread.id === threadId);
+      return thread ? thread.title : '';
+    },
+    [memoizedThreads],
+  );
+
   const getPosts = useCallback(async () => {
     try {
       await rootStore.posts.getPosts();
@@ -34,8 +61,10 @@ const ThreadPage: React.FC<{
 
   const renderPosts = useCallback(() => {
     const filteredPosts = memoizedPosts.filter(
-      (post) => post.thread === thread.title,
+      (post) => getThreadTitle(parseInt(post.thread)) === thread.title,
     );
+
+    console.log('filteredPosts:', filteredPosts);
 
     return filteredPosts.map((post) => (
       <ListGroup.Item key={post.id}>
@@ -48,7 +77,7 @@ const ThreadPage: React.FC<{
         <div className="mt-2">{post.message}</div>
       </ListGroup.Item>
     ));
-  }, [memoizedPosts, thread.title]);
+  }, [getThreadTitle, memoizedPosts, thread.title]);
 
   return (
     <div className="thread-index-page">
