@@ -55,11 +55,17 @@ function App() {
       {memoizedBoards.map((board) => (
         <Route
           key={board.id}
-          path={`/board${board.id}`}
+          path={`/board_${board.name}`}
           element={<BoardPage board={board} />}
         />
       ))}
-
+      {memoizedThreads.map((thread) => (
+        <Route
+          key={thread.id}
+          path={`/board_${thread.board}/thread_${thread.title}`}
+          element={<ThreadPage thread={thread} />}
+        />
+      ))}
       <Route path="/profile" element={<ProfilePage />} />
     </Routes>
   );

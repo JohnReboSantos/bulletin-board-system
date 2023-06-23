@@ -94,6 +94,7 @@ class UserLoginView(KnoxLoginView):
     permission_classes = []
 
     def post(self, request, format=None):
+        print("request.data:", request.data)
         serializer = LoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data["user"]

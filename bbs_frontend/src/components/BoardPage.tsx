@@ -32,7 +32,10 @@ const BoardPage: React.FC<{
   );
 
   const renderThreads = useCallback(() => {
-    return memoizedThreads.map((thread) => (
+    const filteredThreads = memoizedThreads.filter(
+      (thread) => thread.board === board.name,
+    );
+    return filteredThreads.map((thread) => (
       <ListGroup.Item key={thread.id}>
         <div className="d-flex justify-content-between align-items-center">
           <div>{thread.title}</div>
@@ -47,7 +50,7 @@ const BoardPage: React.FC<{
         </div>
       </ListGroup.Item>
     ));
-  }, [memoizedThreads]);
+  }, [board.name, memoizedThreads]);
 
   return (
     <div className="board-index-page">

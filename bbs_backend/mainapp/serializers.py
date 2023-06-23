@@ -111,13 +111,14 @@ class LoginSerializer(serializers.Serializer):
     def validate(self, attrs):
         email = attrs.get("email")
         password = attrs.get("password")
-
+        print("email:", email)
+        print("password:", password)
         user = authenticate(
             request=self.context.get("request"), email=email, password=password
         )
+        print("request:", self.context.get("request"))
         if not user:
             raise serializers.ValidationError("Invalid email or password.")
-
         attrs["user"] = user
         return attrs
 
@@ -127,11 +128,26 @@ class BoardSerializer(serializers.ModelSerializer):
         model = Board
         fields = ('id', 'name', 'topic', 'description', 'created_at')
 
+    def validate_name(self, value):
+        # Check if a board with the same name already exists
+        if Board.objects.filter(name=value).exists():
+            raise serializers.ValidationError("A board with this name already exists.")
+        return value
+
 
 class ThreadSerializer(serializers.ModelSerializer):
     class Meta:
         model = Thread
         fields = ('id', 'title', 'board', 'created_by', 'created_at', 'locked')
+    
+    def validate(self, attrs):
+        board = attrs.get('board')
+        title = attrs.get('title')
+
+        # Check if a thread with the same board and title already exists
+        if Thread.objects.filter(board=board, title=title).exists():
+            raise serializers.ValidationError("A thread with the same board and title already exists.")
+        return attrs
 
 
 class PostSerializer(serializers.ModelSerializer):

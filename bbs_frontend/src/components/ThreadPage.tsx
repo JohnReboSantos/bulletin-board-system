@@ -3,7 +3,16 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '../stores/RootStore';
 import { Card, ListGroup, Pagination, Form, Button } from 'react-bootstrap';
 
-const ThreadPage = () => {
+const ThreadPage: React.FC<{
+  thread: {
+    id: number;
+    title: string;
+    board: string;
+    created_by: string;
+    created_at: string;
+    locked: boolean;
+  };
+}> = ({ thread }) => {
   const rootStore = useStore();
 
   const getPosts = useCallback(async () => {
@@ -23,8 +32,12 @@ const ThreadPage = () => {
     [rootStore.posts.posts],
   );
 
-  const renderPosts = () => {
-    return memoizedPosts.map((post) => (
+  const renderPosts = useCallback(() => {
+    const filteredPosts = memoizedPosts.filter(
+      (post) => post.thread === thread.title,
+    );
+
+    return filteredPosts.map((post) => (
       <ListGroup.Item key={post.id}>
         <div className="d-flex justify-content-between align-items-center">
           <div>{post.created_by}</div>
@@ -35,7 +48,7 @@ const ThreadPage = () => {
         <div className="mt-2">{post.message}</div>
       </ListGroup.Item>
     ));
-  };
+  }, [memoizedPosts, thread.title]);
 
   return (
     <div className="thread-index-page">
