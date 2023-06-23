@@ -3,7 +3,15 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '../stores/RootStore';
 import { Card, ListGroup, Pagination } from 'react-bootstrap';
 
-const BoardPage = () => {
+const BoardPage: React.FC<{
+  board: {
+    id: number;
+    name: string;
+    topic: string;
+    description: string;
+    created_at: string;
+  };
+}> = ({ board }) => {
   const rootStore = useStore();
 
   const getThreads = useCallback(async () => {
@@ -43,7 +51,7 @@ const BoardPage = () => {
 
   return (
     <div className="board-index-page">
-      <h2>Board Name</h2>
+      <h2>{board.name}</h2>
       <Card>
         <ListGroup variant="flush">{renderThreads()}</ListGroup>
       </Card>

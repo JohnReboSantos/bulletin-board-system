@@ -1,38 +1,35 @@
-import React from 'react';
+import React, { useEffect, useCallback, useMemo } from 'react';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../stores/RootStore';
 import { Card, ListGroup, Pagination, Form, Button } from 'react-bootstrap';
 
 const ThreadPage = () => {
-  const thread = {
-    id: 1,
-    title: 'Thread Title',
-    board: 'Board Name',
-    posts: [
-      {
-        id: 1,
-        posterName: 'User A',
-        avatar: 'avatar_url',
-        date: '2023-06-01',
-        message: 'Post message 1',
-      },
-      {
-        id: 2,
-        posterName: 'User B',
-        avatar: 'avatar_url',
-        date: '2023-06-02',
-        message: 'Post message 2',
-      },
-      // Add more post objects as needed
-    ],
-    locked: false,
-  };
+  const rootStore = useStore();
+
+  const getPosts = useCallback(async () => {
+    try {
+      await rootStore.posts.getPosts();
+    } catch (error) {
+      console.error('Error getting posts:', error);
+    }
+  }, [rootStore.posts]);
+
+  useEffect(() => {
+    getPosts();
+  }, [getPosts]);
+
+  const memoizedPosts = useMemo(
+    () => rootStore.posts.posts,
+    [rootStore.posts.posts],
+  );
 
   const renderPosts = () => {
-    return thread.posts.map((post) => (
+    return memoizedPosts.map((post) => (
       <ListGroup.Item key={post.id}>
         <div className="d-flex justify-content-between align-items-center">
-          <div>{post.posterName}</div>
+          <div>{post.created_by}</div>
           <div>
-            <small>{post.date}</small>
+            <small>{post.created_at}</small>
           </div>
         </div>
         <div className="mt-2">{post.message}</div>
@@ -45,9 +42,7 @@ const ThreadPage = () => {
       <h2>{thread.title}</h2>
       <h4>Board: {thread.board}</h4>
       <Card>
-        <ListGroup variant="flush">
-          {renderPosts()}
-        </ListGroup>
+        <ListGroup variant="flush">{renderPosts()}</ListGroup>
       </Card>
       {!thread.locked && (
         <div className="reply-form">
@@ -76,4 +71,4 @@ const ThreadPage = () => {
   );
 };
 
-export default ThreadPage;
+export default observer(ThreadPage);
