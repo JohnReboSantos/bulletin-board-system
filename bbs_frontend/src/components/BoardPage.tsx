@@ -14,6 +14,31 @@ const BoardPage: React.FC<{
 }> = ({ board }) => {
   const rootStore = useStore();
 
+  const getBoards = useCallback(async () => {
+    try {
+      await rootStore.boards.getBoards();
+    } catch (error) {
+      console.error('Error getting boards:', error);
+    }
+  }, [rootStore.boards]);
+
+  useEffect(() => {
+    getBoards();
+  }, [getBoards]);
+
+  const memoizedBoards = useMemo(
+    () => rootStore.boards.boards,
+    [rootStore.boards.boards],
+  );
+
+  const getBoardName = useCallback(
+    (boardId: number) => {
+      const board = memoizedBoards.find((board) => board.id === boardId);
+      return board ? board.name : '';
+    },
+    [memoizedBoards],
+  );
+
   const getThreads = useCallback(async () => {
     try {
       await rootStore.threads.getThreads();
@@ -26,15 +51,19 @@ const BoardPage: React.FC<{
     getThreads();
   }, [getThreads]);
 
+  console.log('rootStore.threads.threads:', rootStore.threads.threads);
+
   const memoizedThreads = useMemo(
     () => rootStore.threads.threads,
     [rootStore.threads.threads],
   );
 
   const renderThreads = useCallback(() => {
+    console.log('memoizedThreads:', memoizedThreads);
     const filteredThreads = memoizedThreads.filter(
-      (thread) => thread.board === board.name,
+      (thread) => getBoardName(parseInt(thread.board)) === board.name,
     );
+    console.log('filteredThreads:', filteredThreads);
     return filteredThreads.map((thread) => (
       <ListGroup.Item key={thread.id}>
         <div className="d-flex justify-content-between align-items-center">
@@ -50,7 +79,7 @@ const BoardPage: React.FC<{
         </div>
       </ListGroup.Item>
     ));
-  }, [board.name, memoizedThreads]);
+  }, [board.name, getBoardName, memoizedThreads]);
 
   return (
     <div className="board-index-page">

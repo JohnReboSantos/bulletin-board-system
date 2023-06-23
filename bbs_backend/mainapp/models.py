@@ -53,7 +53,7 @@ class Thread(models.Model):
     locked = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.title
+        return f"{self.title} in {self.board.name}"
 
 
 class Post(models.Model):

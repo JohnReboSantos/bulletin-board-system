@@ -1,6 +1,5 @@
-import React, { useEffect, useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import { observer } from 'mobx-react-lite';
-import { useStore } from '../stores/RootStore';
 import {
   Button,
   Card,
@@ -11,26 +10,15 @@ import {
 } from 'react-bootstrap';
 import '../App.css';
 
-const HomePage = () => {
-  const rootStore = useStore();
-
-  const getBoards = useCallback(async () => {
-    try {
-      await rootStore.boards.getBoards();
-    } catch (error) {
-      console.error('Error getting boards:', error);
-    }
-  }, [rootStore.boards]);
-
-  useEffect(() => {
-    getBoards();
-  }, [getBoards]);
-
-  const memoizedBoards = useMemo(
-    () => rootStore.boards.boards,
-    [rootStore.boards.boards],
-  );
-
+const HomePage: React.FC<{
+  boards: {
+    id: number;
+    name: string;
+    topic: string;
+    description: string;
+    created_at: string;
+  }[];
+}> = ({ boards }) => {
   interface Board {
     id: number;
     name: string;
@@ -38,6 +26,8 @@ const HomePage = () => {
     description: string;
     created_at: string;
   }
+
+  console.log('boards from homepage', boards);
 
   const renderTooltip = useCallback(
     (board: Board) => (
@@ -69,7 +59,7 @@ const HomePage = () => {
       </Navbar>
 
       <div className="board-list">
-        {memoizedBoards.map((board) => (
+        {boards.map((board) => (
           <OverlayTrigger
             key={board.id}
             placement="bottom"

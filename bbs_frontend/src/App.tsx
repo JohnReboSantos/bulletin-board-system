@@ -47,9 +47,12 @@ function App() {
     [rootStore.threads.threads],
   );
 
+  console.log('rootStore.boards.boards:', rootStore.boards.boards);
+  console.log('memoizedBoards:', memoizedBoards);
+
   return (
     <Routes>
-      <Route path="/" element={<HomePage />} />
+      <Route path="/" element={<HomePage boards={memoizedBoards} />} />
       <Route path="/register" element={<RegistrationPage />} />
       <Route path="/login" element={<LoginPage />} />
       {memoizedBoards.map((board) => (
