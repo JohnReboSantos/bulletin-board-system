@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import {
   Button,
@@ -65,7 +66,9 @@ const HomePage: React.FC<{
           >
             <Card style={{ width: '18rem', margin: '10px' }}>
               <Card.Body>
-                <Card.Title>{board.name}</Card.Title>
+                <Link to={`/board/${board.name}`}>
+                  <Card.Title>{board.name}</Card.Title>
+                </Link>
                 <Card.Subtitle className="mb-2 text-muted">
                   {board.topic}
                 </Card.Subtitle>

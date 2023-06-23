@@ -63,14 +63,14 @@ function App() {
       {memoizedBoards.map((board) => (
         <Route
           key={board.id}
-          path={`/board_${board.name}`}
+          path={`/board/${board.name}`}
           element={<BoardPage board={board} />}
         />
       ))}
       {memoizedThreads.map((thread) => (
         <Route
           key={thread.id}
-          path={`/board_${getBoardName(parseInt(thread.board))}/thread_${
+          path={`/board/${getBoardName(parseInt(thread.board))}/thread/${
             thread.title
           }`}
           element={<ThreadPage thread={thread} />}

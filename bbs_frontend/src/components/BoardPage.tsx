@@ -1,4 +1,5 @@
 import React, { useEffect, useCallback, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../stores/RootStore';
 import { Card, ListGroup, Pagination } from 'react-bootstrap';
@@ -65,7 +66,9 @@ const BoardPage: React.FC<{
     return filteredThreads.map((thread) => (
       <ListGroup.Item key={thread.id}>
         <div className="d-flex justify-content-between align-items-center">
-          <div>{thread.title}</div>
+          <Link to={`/board/${board.name}/thread/${thread.title}`}>
+            <div>{thread.title}</div>
+          </Link>
           <div>
             {thread.locked && <span className="text-danger">Locked</span>}
           </div>
