@@ -1,23 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Form, Button, Navbar } from 'react-bootstrap';
+import { useStore } from '../stores/RootStore';
 
 const LoginPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const rootStore = useStore();
+  const [formData, setFormData] = useState({ email: '', password: '' });
 
-  const handleEmailChange = (event: any) => {
-    setEmail(event.target.value);
-  };
+  interface User {
+    email: string;
+    password: string;
+  }
 
-  const handlePasswordChange = (event: any) => {
-    setPassword(event.target.value);
-  };
+  const handleSubmit = useCallback(
+    async (e: any) => {
+      e.preventDefault();
+      console.log(formData);
 
-  const handleSubmit = (event: any) => {
-    event.preventDefault();
-    // Add your login logic here
-    console.log('Login submitted');
-  };
+      const login = async (formData: User) => {
+        try {
+          await rootStore.user.login(formData);
+        } catch (error) {
+          console.error('Login error:', error);
+        }
+      };
+
+      login(formData);
+    },
+    [formData, rootStore.user],
+  );
 
   return (
     <div>
@@ -39,8 +49,10 @@ const LoginPage = () => {
             <Form.Control
               type="email"
               placeholder="Enter email"
-              value={email}
-              onChange={handleEmailChange}
+              value={formData.email}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
             />
           </Form.Group>
 
@@ -49,8 +61,10 @@ const LoginPage = () => {
             <Form.Control
               type="password"
               placeholder="Enter password"
-              value={password}
-              onChange={handlePasswordChange}
+              value={formData.password}
+              onChange={(e) =>
+                setFormData({ ...formData, password: e.target.value })
+              }
             />
           </Form.Group>
 

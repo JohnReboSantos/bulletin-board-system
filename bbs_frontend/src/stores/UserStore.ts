@@ -87,9 +87,9 @@ export class UserStore extends Model({
         }),
       );
       if (response.ok) {
-        console.log('Logged in successfully');
+        alert('Logged in successfully');
       } else {
-        console.log('Failed Network Request');
+        alert('Failed Network Request:' + response.statusText);
       }
     } catch (error) {
       console.log('Login error:', error);

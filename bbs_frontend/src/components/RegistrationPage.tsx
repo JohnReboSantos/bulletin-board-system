@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Form, Button, Navbar } from 'react-bootstrap';
 import { useStore } from '../stores/RootStore';
 
 const RegistrationPage = () => {
   const rootStore = useStore();
+  const [isRegistered, setIsRegistered] = useState(false);
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -32,21 +35,30 @@ const RegistrationPage = () => {
     interests: string;
   }
 
-  const handleSubmit = (e: any) => {
-    e.preventDefault();
-    console.log(formData);
+  const handleSubmit = useCallback(
+    async (e: any) => {
+      e.preventDefault();
+      console.log(formData);
 
-    const register = async (formData: User) => {
-      try {
-        await rootStore.user.register(formData);
-        console.log('Success');
-      } catch (error) {
-        console.error('Registration error:', error);
-      }
-    };
+      const register = async (formData: User) => {
+        try {
+          await rootStore.user.register(formData);
+        } catch (error) {
+          console.error('Registration error:', error);
+        }
+      };
 
-    register(formData);
-  };
+      register(formData);
+      setIsRegistered(true);
+    },
+    [formData, rootStore.user],
+  );
+
+  useEffect(() => {
+    if (isRegistered) {
+      navigate('/');
+    }
+  }, [isRegistered, navigate]);
 
   return (
     <div>
