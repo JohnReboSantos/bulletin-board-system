@@ -1,8 +1,7 @@
 from django.contrib import admin
-from .models import CustomUser, Administrator, Moderator, Poster, Board, Thread, Post
+from .models import Administrator, Moderator, Poster, Board, Thread, Post
 
 
-admin.site.register(CustomUser)
 admin.site.register(Administrator)
 admin.site.register(Moderator)
 admin.site.register(Poster)

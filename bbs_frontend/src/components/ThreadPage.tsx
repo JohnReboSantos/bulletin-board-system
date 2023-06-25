@@ -2,7 +2,14 @@ import React, { useEffect, useCallback, useMemo } from 'react';
 // import { Link } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../stores/RootStore';
-import { Card, ListGroup, Pagination, Form, Button } from 'react-bootstrap';
+import {
+  Card,
+  ListGroup,
+  Pagination,
+  Form,
+  Button,
+  Navbar,
+} from 'react-bootstrap';
 
 const ThreadPage: React.FC<{
   thread: {
@@ -81,35 +88,47 @@ const ThreadPage: React.FC<{
   }, [getThreadTitle, memoizedPosts, thread.title]);
 
   return (
-    <div className="thread-index-page">
-      <h2>{thread.title}</h2>
-      <h4>Board: {thread.board}</h4>
-      <Card>
-        <ListGroup variant="flush">{renderPosts()}</ListGroup>
-      </Card>
-      {!thread.locked && (
-        <div className="reply-form">
-          <Form>
-            <Form.Group controlId="postMessage">
-              <Form.Label>Post Message</Form.Label>
-              <Form.Control as="textarea" rows={3} />
-            </Form.Group>
-            <Button variant="primary" type="submit">
-              Reply
-            </Button>
-          </Form>
-        </div>
-      )}
-      <Pagination className="mt-3">
-        <Pagination.First />
-        <Pagination.Prev />
-        <Pagination.Item active>{1}</Pagination.Item>
-        <Pagination.Item>{2}</Pagination.Item>
-        <Pagination.Item>{3}</Pagination.Item>
-        <Pagination.Ellipsis />
-        <Pagination.Next />
-        <Pagination.Last />
-      </Pagination>
+    <div>
+      <Navbar bg="light" expand="lg">
+        <Navbar.Brand href="/">Bulletin Board System</Navbar.Brand>
+        <Navbar.Toggle aria-controls="navbar-nav" />
+        <Navbar.Collapse id="navbar-nav">
+          <Navbar.Collapse className="justify-content-end">
+            <Button variant="primary">Log in</Button>
+            <Button variant="primary">Register</Button>
+          </Navbar.Collapse>
+        </Navbar.Collapse>
+      </Navbar>
+      <div className="thread-index-page">
+        <h2>{thread.title}</h2>
+        <h4>Board: {thread.board}</h4>
+        <Card>
+          <ListGroup variant="flush">{renderPosts()}</ListGroup>
+        </Card>
+        {!thread.locked && (
+          <div className="reply-form">
+            <Form>
+              <Form.Group controlId="postMessage">
+                <Form.Label>Post Message</Form.Label>
+                <Form.Control as="textarea" rows={3} />
+              </Form.Group>
+              <Button variant="primary" type="submit">
+                Reply
+              </Button>
+            </Form>
+          </div>
+        )}
+        <Pagination className="mt-3">
+          <Pagination.First />
+          <Pagination.Prev />
+          <Pagination.Item active>{1}</Pagination.Item>
+          <Pagination.Item>{2}</Pagination.Item>
+          <Pagination.Item>{3}</Pagination.Item>
+          <Pagination.Ellipsis />
+          <Pagination.Next />
+          <Pagination.Last />
+        </Pagination>
+      </div>
     </div>
   );
 };

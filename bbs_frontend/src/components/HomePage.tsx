@@ -47,12 +47,16 @@ const HomePage: React.FC<{
   return (
     <div>
       <Navbar bg="light" expand="lg">
-        <Navbar.Brand href="#">Your Website</Navbar.Brand>
+        <Navbar.Brand href="/">Bulletin Board System</Navbar.Brand>
         <Navbar.Toggle aria-controls="navbar-nav" />
         <Navbar.Collapse id="navbar-nav">
           <Navbar.Collapse className="justify-content-end">
-            <Button variant="primary">Log in</Button>
-            <Button variant="primary">Register</Button>
+            <Link to="/login">
+              <Button variant="primary">Log in</Button>
+            </Link>
+            <Link to="/register">
+              <Button variant="primary">Register</Button>
+            </Link>
           </Navbar.Collapse>
         </Navbar.Collapse>
       </Navbar>
@@ -66,7 +70,7 @@ const HomePage: React.FC<{
           >
             <Card style={{ width: '18rem', margin: '10px' }}>
               <Card.Body>
-                <Link to={`/board/${board.name}`}>
+                <Link to={`/board_${board.name}`}>
                   <Card.Title>{board.name}</Card.Title>
                 </Link>
                 <Card.Subtitle className="mb-2 text-muted">

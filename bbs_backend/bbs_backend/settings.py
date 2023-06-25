@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # apps
     "mainapp",
+    "authentication",
     # third party apps
     "rest_framework",
     "corsheaders",
@@ -133,7 +134,7 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = "mainapp.CustomUser"
+AUTH_USER_MODEL = "authentication.CustomUser"
 
 REST_FRAMEWORK = {
     # 'DEFAULT_PERMISSION_CLASSES': (
