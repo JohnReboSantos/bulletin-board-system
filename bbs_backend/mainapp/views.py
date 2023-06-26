@@ -3,12 +3,14 @@ from rest_framework.views import APIView
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from authentication.models import CustomUser
-from .models import Board, Thread, Post
+from .models import Board, Thread, Post, Administrator, Moderator
 from .serializers import (
     UserSerializer,
     BoardSerializer,
     ThreadSerializer,
-    PostSerializer
+    PostSerializer,
+    AdministratorSerializer,
+    ModeratorSerializer
 )
 
 
@@ -42,3 +44,13 @@ class ThreadViewSet(viewsets.ModelViewSet):
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
+
+
+class AdministratorViewSet(viewsets.ModelViewSet):
+    queryset = Administrator.objects.all()
+    serializer_class = AdministratorSerializer
+
+
+class ModeratorViewSet(viewsets.ModelViewSet):
+    queryset = Moderator.objects.all()
+    serializer_class = ModeratorSerializer
