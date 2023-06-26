@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
+import { observer } from 'mobx-react-lite';
 import { useNavigate } from 'react-router-dom';
 import { Form, Button, Navbar } from 'react-bootstrap';
 import { useStore } from '../stores/RootStore';
@@ -215,4 +216,4 @@ const RegistrationPage = () => {
   );
 };
 
-export default RegistrationPage;
+export default observer(RegistrationPage);

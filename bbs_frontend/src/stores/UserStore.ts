@@ -23,6 +23,7 @@ export class UserStore extends Model({
       const response = yield* _await(fetch('http://127.0.0.1:8000/auth/user/'));
       const data = yield* _await(response.json());
       this.user = data;
+      console.log('User logged in:', data);
     } catch (error) {
       console.log('Error getting user:', error);
       this.user = {

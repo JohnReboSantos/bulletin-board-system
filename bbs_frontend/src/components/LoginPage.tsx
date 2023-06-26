@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { observer } from 'mobx-react-lite';
 import { Form, Button, Navbar } from 'react-bootstrap';
 import { useStore } from '../stores/RootStore';
 
@@ -77,4 +78,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default observer(LoginPage);

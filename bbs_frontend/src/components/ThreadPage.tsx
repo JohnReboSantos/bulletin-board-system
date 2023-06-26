@@ -49,8 +49,6 @@ const ThreadPage: React.FC<{
       (post) => getThreadTitle(parseInt(post.thread)) === thread.title,
     );
 
-    console.log('filteredPosts:', filteredPosts);
-
     return filteredPosts.map((post) => (
       <ListGroup.Item key={post.id}>
         <div className="d-flex justify-content-between align-items-center">

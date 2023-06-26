@@ -3,7 +3,14 @@ import { Link } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../stores/RootStore';
 import { useGetBoardName } from './utils';
-import { Card, ListGroup, Pagination, Navbar, Button } from 'react-bootstrap';
+import {
+  Card,
+  ListGroup,
+  Pagination,
+  Form,
+  Navbar,
+  Button,
+} from 'react-bootstrap';
 
 const BoardPage: React.FC<{
   board: {
@@ -15,6 +22,7 @@ const BoardPage: React.FC<{
   };
 }> = ({ board }) => {
   const rootStore = useStore();
+  const isLoggedIn = true; // change later to login method
   const getBoardName = useGetBoardName();
 
   const memoizedThreads = useMemo(
@@ -23,11 +31,9 @@ const BoardPage: React.FC<{
   );
 
   const renderThreads = useCallback(() => {
-    console.log('memoizedThreads:', memoizedThreads);
     const filteredThreads = memoizedThreads.filter(
       (thread) => getBoardName(parseInt(thread.board)) === board.name,
     );
-    console.log('filteredThreads:', filteredThreads);
     return filteredThreads.map((thread) => (
       <ListGroup.Item key={thread.id}>
         <div className="d-flex justify-content-between align-items-center">
@@ -64,6 +70,19 @@ const BoardPage: React.FC<{
         <Card>
           <ListGroup variant="flush">{renderThreads()}</ListGroup>
         </Card>
+        {isLoggedIn && (
+          <div className="createthread-form">
+            <Form>
+              <Form.Group controlId="createThread">
+                <Form.Label>Create thread</Form.Label>
+                <Form.Control as="textarea" />
+              </Form.Group>
+              <Button variant="primary" type="submit">
+                Create
+              </Button>
+            </Form>
+          </div>
+        )}
         <Pagination className="mt-3">
           <Pagination.First />
           <Pagination.Prev />

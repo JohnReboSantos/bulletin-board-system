@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { observer } from 'mobx-react-lite';
 import {
   Card,
   ListGroup,
@@ -32,44 +33,52 @@ const ProfilePage = ({ user }: ProfilePageProps) => {
   const [isCurrentUser, setIsCurrentUser] = useState(false);
   const isAdminOrMod = useIsAdminOrMod();
 
+  // mali pa to palitan mo ng isLoggedIn or smth
   const getUser = useCallback(async () => {
     try {
-      await rootStore.users.getUsers();
+      await rootStore.user.getUser();
       setIsCurrentUser(true);
     } catch (error) {
       console.error('Error getting user:', error);
       setIsCurrentUser(false);
     }
-  }, [rootStore.users]);
+  }, [rootStore.user]);
 
   useEffect(() => {
     getUser();
   }, [getUser]);
+  //hanggang dito
 
-  const posts = [
-    {
-      id: 1,
-      message: 'Post message 1',
-      date: '2023-06-01',
-    },
-    {
-      id: 2,
-      message: 'Post message 2',
-      date: '2023-06-02',
-    },
-    // Add more post objects as needed
-  ];
+  const getPosts = useCallback(async () => {
+    try {
+      await rootStore.posts.getPosts();
+    } catch (error) {
+      console.error('Error getting posts:', error);
+    }
+  }, [rootStore.posts]);
 
-  const renderPosts = () => {
-    return posts.map((post) => (
+  useEffect(() => {
+    getPosts();
+  }, [getPosts]);
+
+  const memoizedPosts = useMemo(
+    () => rootStore.posts.posts,
+    [rootStore.posts.posts],
+  );
+
+  const renderPosts = useCallback(() => {
+    const filteredPosts = memoizedPosts.filter(
+      (post) => parseInt(post.created_by) === user.id,
+    );
+    return filteredPosts.map((post) => (
       <ListGroup.Item key={post.id}>
         <div>{post.message}</div>
         <div>
-          <small>{post.date}</small>
+          <small>{post.created_at}</small>
         </div>
       </ListGroup.Item>
     ));
-  };
+  }, [memoizedPosts, user.id]);
 
   return (
     <div>
@@ -96,7 +105,7 @@ const ProfilePage = ({ user }: ProfilePageProps) => {
                     <Form.Label>Username</Form.Label>
                     <Form.Control type="text" defaultValue={user.username} />
                   </Form.Group>
-                  <Form.Group controlId="formAbout">
+                  <Form.Group controlId="formAboutMyself">
                     <Form.Label>About Myself</Form.Label>
                     <Form.Control
                       as="textarea"
@@ -104,7 +113,36 @@ const ProfilePage = ({ user }: ProfilePageProps) => {
                       defaultValue={user.about_myself}
                     />
                   </Form.Group>
-                  {/* Add more profile form fields as needed */}
+                  <Form.Group controlId="formDateOfBirth">
+                    <Form.Label>Date of Birth</Form.Label>
+                    <Form.Control
+                      type="date"
+                      defaultValue={user.date_of_birth}
+                    />
+                  </Form.Group>
+                  <Form.Group controlId="formHometown">
+                    <Form.Label>Hometown</Form.Label>
+                    <Form.Control type="text" defaultValue={user.hometown} />
+                  </Form.Group>
+                  <Form.Group controlId="formPresentLocation">
+                    <Form.Label>Present Location</Form.Label>
+                    <Form.Control
+                      type="text"
+                      defaultValue={user.present_location}
+                    />
+                  </Form.Group>
+                  <Form.Group controlId="formWebsite">
+                    <Form.Label>Website (Optional)</Form.Label>
+                    <Form.Control type="text" defaultValue={user.website} />
+                  </Form.Group>
+                  <Form.Group controlId="formGender">
+                    <Form.Label>Gender (Optional)</Form.Label>
+                    <Form.Control type="text" defaultValue={user.gender} />
+                  </Form.Group>
+                  <Form.Group controlId="formInterests">
+                    <Form.Label>Interests (Optional)</Form.Label>
+                    <Form.Control type="text" defaultValue={user.interests} />
+                  </Form.Group>
                   <Button variant="primary" type="submit">
                     Update Profile
                   </Button>
@@ -142,4 +180,4 @@ const ProfilePage = ({ user }: ProfilePageProps) => {
   );
 };
 
-export default ProfilePage;
+export default observer(ProfilePage);
