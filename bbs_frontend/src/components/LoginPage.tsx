@@ -15,7 +15,6 @@ const LoginPage = () => {
   const handleSubmit = useCallback(
     async (e: any) => {
       e.preventDefault();
-      console.log(formData);
 
       const login = async (formData: User) => {
         try {

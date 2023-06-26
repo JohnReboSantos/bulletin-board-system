@@ -26,6 +26,7 @@ const { Provider: StoreProvider } = StoreContext;
 
 function createRootStore() {
   const user = new UserStore({
+    key: '',
     user: {
       id: 0,
       username: '',

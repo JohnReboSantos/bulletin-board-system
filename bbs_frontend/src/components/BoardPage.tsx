@@ -1,8 +1,10 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import localForage from 'localforage';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../stores/RootStore';
 import { useGetBoardName } from './utils';
+import { useIsAdminOrMod } from './utils';
 import {
   Card,
   ListGroup,
@@ -22,13 +24,40 @@ const BoardPage: React.FC<{
   };
 }> = ({ board }) => {
   const rootStore = useStore();
-  const isLoggedIn = true; // change later to login method
+  const isAdminOrMod = useIsAdminOrMod();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const getBoardName = useGetBoardName();
+
+  const getUser = useCallback(async () => {
+    try {
+      await rootStore.user.getUser();
+      rootStore.user.user.id ? setIsLoggedIn(true) : setIsLoggedIn(false);
+    } catch (error) {
+      console.error('Error getting user:', error);
+      setIsLoggedIn(false);
+    }
+  }, [rootStore.user]);
+
+  useEffect(() => {
+    getUser();
+  }, [getUser]);
 
   const memoizedThreads = useMemo(
     () => rootStore.threads.threads,
     [rootStore.threads.threads],
   );
+
+  const handleLogout = useCallback(() => {
+    localForage
+      .removeItem('authToken')
+      .then(() => {
+        alert('Logged out successfully');
+        setIsLoggedIn(false);
+      })
+      .catch((error) => {
+        alert('Logout error:' + error);
+      });
+  }, []);
 
   const renderThreads = useCallback(() => {
     const filteredThreads = memoizedThreads.filter(
@@ -49,9 +78,18 @@ const BoardPage: React.FC<{
             Last reply: {/* last reply */} by {/* last replier name*/}
           </small>
         </div>
+        {isAdminOrMod(rootStore.user.user.id) && (
+          <Button variant="secondary">Lock thread</Button>
+        )}
       </ListGroup.Item>
     ));
-  }, [board.name, getBoardName, memoizedThreads]);
+  }, [
+    board.name,
+    getBoardName,
+    isAdminOrMod,
+    memoizedThreads,
+    rootStore.user.user.id,
+  ]);
 
   return (
     <div>
@@ -59,10 +97,24 @@ const BoardPage: React.FC<{
         <Navbar.Brand href="/">Bulletin Board System</Navbar.Brand>
         <Navbar.Toggle aria-controls="navbar-nav" />
         <Navbar.Collapse id="navbar-nav">
-          <Navbar.Collapse className="justify-content-end">
-            <Button variant="primary">Log in</Button>
-            <Button variant="primary">Register</Button>
-          </Navbar.Collapse>
+          {isLoggedIn ? (
+            <Navbar.Collapse className="justify-content-end">
+              <Link to="/">
+                <Button variant="primary" onClick={handleLogout}>
+                  Log out
+                </Button>
+              </Link>
+            </Navbar.Collapse>
+          ) : (
+            <Navbar.Collapse className="justify-content-end">
+              <Link to="/login">
+                <Button variant="primary">Log in</Button>
+              </Link>
+              <Link to="/register">
+                <Button variant="primary">Register</Button>
+              </Link>
+            </Navbar.Collapse>
+          )}
         </Navbar.Collapse>
       </Navbar>
       <div className="board-index-page">

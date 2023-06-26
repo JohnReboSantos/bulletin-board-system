@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { observer } from 'mobx-react-lite';
+import localForage from 'localforage';
 import {
   Card,
   ListGroup,
@@ -10,6 +11,7 @@ import {
 } from 'react-bootstrap';
 import { useIsAdminOrMod } from './utils';
 import { useStore } from '../stores/RootStore';
+import { Link } from 'react-router-dom';
 
 interface User {
   id: number;
@@ -31,23 +33,25 @@ interface ProfilePageProps {
 const ProfilePage = ({ user }: ProfilePageProps) => {
   const rootStore = useStore();
   const [isCurrentUser, setIsCurrentUser] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const isAdminOrMod = useIsAdminOrMod();
 
-  // mali pa to palitan mo ng isLoggedIn or smth
   const getUser = useCallback(async () => {
     try {
       await rootStore.user.getUser();
-      setIsCurrentUser(true);
+      rootStore.user.user.id ? setIsLoggedIn(true) : setIsLoggedIn(false);
+      rootStore.user.user.id === user.id
+        ? setIsCurrentUser(true)
+        : setIsCurrentUser(false);
     } catch (error) {
       console.error('Error getting user:', error);
-      setIsCurrentUser(false);
+      setIsLoggedIn(false);
     }
-  }, [rootStore.user]);
+  }, [rootStore.user, user.id]);
 
   useEffect(() => {
     getUser();
   }, [getUser]);
-  //hanggang dito
 
   const getPosts = useCallback(async () => {
     try {
@@ -65,6 +69,18 @@ const ProfilePage = ({ user }: ProfilePageProps) => {
     () => rootStore.posts.posts,
     [rootStore.posts.posts],
   );
+
+  const handleLogout = useCallback(() => {
+    localForage
+      .removeItem('authToken')
+      .then(() => {
+        alert('Logged out successfully');
+        setIsLoggedIn(false);
+      })
+      .catch((error) => {
+        alert('Logout error:' + error);
+      });
+  }, []);
 
   const renderPosts = useCallback(() => {
     const filteredPosts = memoizedPosts.filter(
@@ -86,10 +102,24 @@ const ProfilePage = ({ user }: ProfilePageProps) => {
         <Navbar.Brand href="/">Bulletin Board System</Navbar.Brand>
         <Navbar.Toggle aria-controls="navbar-nav" />
         <Navbar.Collapse id="navbar-nav">
-          <Navbar.Collapse className="justify-content-end">
-            <Button variant="primary">Log in</Button>
-            <Button variant="primary">Register</Button>
-          </Navbar.Collapse>
+          {isLoggedIn ? (
+            <Navbar.Collapse className="justify-content-end">
+              <Link to="/">
+                <Button variant="primary" onClick={handleLogout}>
+                  Log out
+                </Button>
+              </Link>
+            </Navbar.Collapse>
+          ) : (
+            <Navbar.Collapse className="justify-content-end">
+              <Link to="/login">
+                <Button variant="primary">Log in</Button>
+              </Link>
+              <Link to="/register">
+                <Button variant="primary">Register</Button>
+              </Link>
+            </Navbar.Collapse>
+          )}
         </Navbar.Collapse>
       </Navbar>
       <div className="user-profile-page">
@@ -151,16 +181,17 @@ const ProfilePage = ({ user }: ProfilePageProps) => {
             )}
           </Card.Body>
         </Card>
-        {isAdminOrMod(user.id) && (
-          <div>
-            <Button variant="danger" className="mt-3">
-              Ban User
-            </Button>
-            <Button variant="success" className="mt-3">
-              Unban User
-            </Button>
-          </div>
-        )}
+        {isAdminOrMod(rootStore.user.user.id) &&
+          rootStore.user.user.id !== user.id && (
+            <div>
+              <Button variant="danger" className="mt-3">
+                Ban User
+              </Button>
+              <Button variant="success" className="mt-3">
+                Unban User
+              </Button>
+            </div>
+          )}
         <h4 className="mt-4">Posts</h4>
         <Card>
           <ListGroup variant="flush">{renderPosts()}</ListGroup>

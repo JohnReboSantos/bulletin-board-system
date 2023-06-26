@@ -1,8 +1,9 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 from knox.auth import AuthToken
 from knox.views import LoginView as KnoxLoginView
-from .serializers import RegisterSerializer, LoginSerializer
+from .serializers import RegisterSerializer, LoginSerializer, UserSerializer
 
 
 class LoginAPIView(KnoxLoginView):
@@ -25,30 +26,13 @@ class LoginAPIView(KnoxLoginView):
             }
         )
 
-
 class GetUserDataAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
         user = request.user
-
-        if user.is_authenticated:
-            return Response(
-                {
-                    "user_info": {
-                        "id": user.id,
-                        "email": user.email,
-                        "username": user.username,
-                        "about_myself": user.about_myself,
-                        "date_of_birth": user.date_of_birth,
-                        "hometown": user.hometown,
-                        "present_location": user.present_location,
-                        "website": user.website,
-                        "gender": user.gender,
-                        "interests": user.interests,
-                    },
-                }
-            )
-
-        return Response({"error": "not authenticated"}, status=400)
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
 
 
 class RegisterAPIView(APIView):

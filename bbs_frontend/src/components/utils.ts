@@ -61,6 +61,18 @@ export const useGetUsername = () => {
 export const useIsAdmin = () => {
   const rootStore = useStore();
 
+  const getAdministrators = useCallback(async () => {
+    try {
+      await rootStore.administrators.getAdministrators();
+    } catch (error) {
+      console.error('Error getting admins:', error);
+    }
+  }, [rootStore.administrators]);
+
+  useEffect(() => {
+    getAdministrators();
+  }, [getAdministrators]);
+
   const memoizedAdmins = useMemo(
     () => rootStore.administrators.administrators,
     [rootStore.administrators.administrators],

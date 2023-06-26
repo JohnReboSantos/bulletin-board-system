@@ -42,11 +42,13 @@ class RegisterSerializer(serializers.ModelSerializer):
 
         # Validate if a user with the email already exists
         if CustomUser.objects.filter(email=email).exists():
-            raise serializers.ValidationError("A user with that email already exists.")
-        
+            raise serializers.ValidationError(
+                "A user with that email already exists.")
+
         # Validate if a user with the username already exists
         if CustomUser.objects.filter(username=username).exists():
-            raise serializers.ValidationError("A user with that username already exists.")
+            raise serializers.ValidationError(
+                "A user with that username already exists.")
 
         # Validate password match
         if password1 != password2:
@@ -60,7 +62,8 @@ class RegisterSerializer(serializers.ModelSerializer):
 
         # Validate date of birth format (YYYY-MM-DD)
         try:
-            birth_date = datetime.strptime(str(date_of_birth), "%Y-%m-%d").date()
+            birth_date = datetime.strptime(
+                str(date_of_birth), "%Y-%m-%d").date()
         except ValueError:
             raise serializers.ValidationError(
                 "Invalid date of birth format. Must be YYYY-MM-DD."
@@ -69,9 +72,11 @@ class RegisterSerializer(serializers.ModelSerializer):
         # Validate birth date is in the past
         today = date.today()
         if birth_date > today:
-            raise serializers.ValidationError("Birth date must be in the past.")
+            raise serializers.ValidationError(
+                "Birth date must be in the past.")
 
-        data["password"] = password1  # Save the password to the 'password' field
+        # Save the password to the 'password' field
+        data["password"] = password1
 
         return data
 
@@ -117,3 +122,10 @@ class LoginSerializer(serializers.Serializer):
             raise serializers.ValidationError("Invalid email or password.")
         attrs["user"] = user
         return attrs
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['id', 'username', 'email', 'about_myself', 'date_of_birth',
+                  'hometown', 'present_location', 'website', 'gender', 'interests']

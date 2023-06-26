@@ -1,4 +1,5 @@
 import { model, Model, prop, modelFlow, _async, _await } from 'mobx-keystone';
+import localForage from 'localforage';
 
 interface User {
   id: number;
@@ -15,12 +16,26 @@ interface User {
 
 @model('UserStore')
 export class UserStore extends Model({
+  key: prop<string>(),
   user: prop<User>(),
 }) {
   @modelFlow
   getUser = _async(function* (this: UserStore) {
     try {
-      const response = yield* _await(fetch('http://127.0.0.1:8000/auth/user/'));
+      const headers = new Headers();
+      const storedToken = yield* _await(localForage.getItem('authToken'));
+      if (storedToken) {
+        headers.append('Authorization', `Token ${storedToken}`);
+      }
+
+      console.log('headers:', headers);
+
+      const response = yield* _await(
+        fetch('http://127.0.0.1:8000/auth/user/', {
+          credentials: 'include',
+          headers: headers,
+        }),
+      );
       const data = yield* _await(response.json());
       this.user = data;
       console.log('User logged in:', data);
@@ -76,7 +91,10 @@ export class UserStore extends Model({
   });
 
   @modelFlow
-  login = _async(function* (user: { email: string; password: string }) {
+  login = _async(function* (
+    this: UserStore,
+    user: { email: string; password: string },
+  ) {
     try {
       const response = yield* _await(
         fetch('http://127.0.0.1:8000/auth/login/', {
@@ -86,6 +104,15 @@ export class UserStore extends Model({
           },
           method: 'POST',
         }),
+      );
+      const data = yield* _await(response.json());
+      console.log('login response:', data);
+      this.key = data['key'];
+      console.log('this.key:', this.key);
+      localForage.setItem('authToken', this.key);
+      console.log(
+        'localForage.setItem',
+        localForage.setItem('authToken', this.key),
       );
       if (response.ok) {
         alert('Logged in successfully');
@@ -108,6 +135,7 @@ export class UserStore extends Model({
           method: 'POST',
         }),
       );
+      localForage.removeItem('authToken');
       if (response.ok) {
         console.log('Logged out successfully');
       } else {

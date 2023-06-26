@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useMemo } from 'react';
+import React, { useEffect, useCallback, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../stores/RootStore';
@@ -23,9 +23,24 @@ const ThreadPage: React.FC<{
   };
 }> = ({ thread }) => {
   const rootStore = useStore();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const getBoardName = useGetBoardName();
   const getThreadTitle = useGetThreadTitle();
   const getUsername = useGetUsername();
+
+  const getUser = useCallback(async () => {
+    try {
+      await rootStore.user.getUser();
+      rootStore.user.user.id ? setIsLoggedIn(true) : setIsLoggedIn(false);
+    } catch (error) {
+      console.error('Error getting user:', error);
+      setIsLoggedIn(false);
+    }
+  }, [rootStore.user]);
+
+  useEffect(() => {
+    getUser();
+  }, [getUser]);
 
   const getPosts = useCallback(async () => {
     try {
@@ -82,7 +97,7 @@ const ThreadPage: React.FC<{
         <Card>
           <ListGroup variant="flush">{renderPosts()}</ListGroup>
         </Card>
-        {!thread.locked && (
+        {isLoggedIn && !thread.locked && (
           <div className="reply-form">
             <Form>
               <Form.Group controlId="postMessage">
