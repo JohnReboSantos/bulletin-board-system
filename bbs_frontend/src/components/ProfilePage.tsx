@@ -7,6 +7,7 @@ import {
   Form,
   Navbar,
 } from 'react-bootstrap';
+import { useIsAdminOrMod } from './utils';
 import { useStore } from '../stores/RootStore';
 
 interface User {
@@ -29,7 +30,7 @@ interface ProfilePageProps {
 const ProfilePage = ({ user }: ProfilePageProps) => {
   const rootStore = useStore();
   const [isCurrentUser, setIsCurrentUser] = useState(false);
-  const isAdminOrModerator = true; // Set to true
+  const isAdminOrMod = useIsAdminOrMod();
 
   const getUser = useCallback(async () => {
     try {
@@ -112,15 +113,15 @@ const ProfilePage = ({ user }: ProfilePageProps) => {
             )}
           </Card.Body>
         </Card>
-        {isAdminOrModerator && (
-          <Button variant="danger" className="mt-3">
-            Ban User
-          </Button>
-        )}
-        {!isAdminOrModerator && (
-          <Button variant="success" className="mt-3">
-            Unban User
-          </Button>
+        {isAdminOrMod(user.id) && (
+          <div>
+            <Button variant="danger" className="mt-3">
+              Ban User
+            </Button>
+            <Button variant="success" className="mt-3">
+              Unban User
+            </Button>
+          </div>
         )}
         <h4 className="mt-4">Posts</h4>
         <Card>
