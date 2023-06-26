@@ -10,6 +10,7 @@ import {
   Button,
   Navbar,
 } from 'react-bootstrap';
+import { useGetBoardName, useGetThreadTitle, useGetUsername } from './utils';
 
 const ThreadPage: React.FC<{
   thread: {
@@ -22,33 +23,9 @@ const ThreadPage: React.FC<{
   };
 }> = ({ thread }) => {
   const rootStore = useStore();
-
-  console.log('thread in ThreadPage:', thread);
-
-  const getThreads = useCallback(async () => {
-    try {
-      await rootStore.threads.getThreads();
-    } catch (error) {
-      console.error('Error getting threads:', error);
-    }
-  }, [rootStore.threads]);
-
-  useEffect(() => {
-    getThreads();
-  }, [getThreads]);
-
-  const memoizedThreads = useMemo(
-    () => rootStore.threads.threads,
-    [rootStore.threads.threads],
-  );
-
-  const getThreadTitle = useCallback(
-    (threadId: number) => {
-      const thread = memoizedThreads.find((thread) => thread.id === threadId);
-      return thread ? thread.title : '';
-    },
-    [memoizedThreads],
-  );
+  const getBoardName = useGetBoardName();
+  const getThreadTitle = useGetThreadTitle();
+  const getUsername = useGetUsername();
 
   const getPosts = useCallback(async () => {
     try {
@@ -77,7 +54,7 @@ const ThreadPage: React.FC<{
     return filteredPosts.map((post) => (
       <ListGroup.Item key={post.id}>
         <div className="d-flex justify-content-between align-items-center">
-          <div>{post.created_by}</div>
+          <div>{getUsername(parseInt(post.created_by))}</div>
           <div>
             <small>{post.created_at}</small>
           </div>
@@ -85,7 +62,7 @@ const ThreadPage: React.FC<{
         <div className="mt-2">{post.message}</div>
       </ListGroup.Item>
     ));
-  }, [getThreadTitle, memoizedPosts, thread.title]);
+  }, [getThreadTitle, getUsername, memoizedPosts, thread.title]);
 
   return (
     <div>
@@ -101,7 +78,7 @@ const ThreadPage: React.FC<{
       </Navbar>
       <div className="thread-index-page">
         <h2>{thread.title}</h2>
-        <h4>Board: {thread.board}</h4>
+        <h4>Board: {getBoardName(parseInt(thread.board))}</h4>
         <Card>
           <ListGroup variant="flush">{renderPosts()}</ListGroup>
         </Card>

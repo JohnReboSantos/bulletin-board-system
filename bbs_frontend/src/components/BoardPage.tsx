@@ -1,7 +1,8 @@
-import React, { useEffect, useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../stores/RootStore';
+import { useGetBoardName } from './utils';
 import { Card, ListGroup, Pagination, Navbar, Button } from 'react-bootstrap';
 
 const BoardPage: React.FC<{
@@ -14,43 +15,7 @@ const BoardPage: React.FC<{
   };
 }> = ({ board }) => {
   const rootStore = useStore();
-
-  const getBoards = useCallback(async () => {
-    try {
-      await rootStore.boards.getBoards();
-    } catch (error) {
-      console.error('Error getting boards:', error);
-    }
-  }, [rootStore.boards]);
-
-  useEffect(() => {
-    getBoards();
-  }, [getBoards]);
-
-  const memoizedBoards = useMemo(
-    () => rootStore.boards.boards,
-    [rootStore.boards.boards],
-  );
-
-  const getBoardName = useCallback(
-    (boardId: number) => {
-      const board = memoizedBoards.find((board) => board.id === boardId);
-      return board ? board.name : '';
-    },
-    [memoizedBoards],
-  );
-
-  const getThreads = useCallback(async () => {
-    try {
-      await rootStore.threads.getThreads();
-    } catch (error) {
-      console.error('Error getting threads:', error);
-    }
-  }, [rootStore.threads]);
-
-  useEffect(() => {
-    getThreads();
-  }, [getThreads]);
+  const getBoardName = useGetBoardName();
 
   const memoizedThreads = useMemo(
     () => rootStore.threads.threads,

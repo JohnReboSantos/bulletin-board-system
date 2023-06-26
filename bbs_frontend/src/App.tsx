@@ -3,6 +3,7 @@ import React, { useEffect, useCallback, useMemo } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from './stores/RootStore';
 import { Routes, Route } from 'react-router-dom';
+import { useGetBoardName } from './components/utils';
 import HomePage from './components/HomePage';
 import RegistrationPage from './components/RegistrationPage';
 import LoginPage from './components/LoginPage';
@@ -12,6 +13,7 @@ import ProfilePage from './components/ProfilePage';
 
 function App() {
   const rootStore = useStore();
+  const getBoardName = useGetBoardName();
 
   const getBoards = useCallback(async () => {
     try {
@@ -30,14 +32,6 @@ function App() {
     [rootStore.boards.boards],
   );
 
-  const getBoardName = useCallback(
-    (boardId: number) => {
-      const board = memoizedBoards.find((board) => board.id === boardId);
-      return board ? board.name : '';
-    },
-    [memoizedBoards],
-  );
-
   const getThreads = useCallback(async () => {
     try {
       await rootStore.threads.getThreads();
@@ -53,6 +47,23 @@ function App() {
   const memoizedThreads = useMemo(
     () => rootStore.threads.threads,
     [rootStore.threads.threads],
+  );
+
+  const getUsers = useCallback(async () => {
+    try {
+      await rootStore.users.getUsers();
+    } catch (error) {
+      console.error('Error getting users:', error);
+    }
+  }, [rootStore.users]);
+
+  useEffect(() => {
+    getUsers();
+  }, [getUsers]);
+
+  const memoizedUsers = useMemo(
+    () => rootStore.users.users,
+    [rootStore.users.users],
   );
 
   return (
@@ -76,7 +87,13 @@ function App() {
           element={<ThreadPage thread={thread} />}
         />
       ))}
-      <Route path="/profile" element={<ProfilePage />} />
+      {memoizedUsers.map((user) => (
+        <Route
+          key={user.id}
+          path={`/user_${user.id}`}
+          element={<ProfilePage user={user} />}
+        />
+      ))}
     </Routes>
   );
 }

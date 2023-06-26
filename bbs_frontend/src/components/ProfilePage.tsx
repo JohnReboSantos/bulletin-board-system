@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Card,
   ListGroup,
@@ -7,17 +7,43 @@ import {
   Form,
   Navbar,
 } from 'react-bootstrap';
+import { useStore } from '../stores/RootStore';
 
-const UserProfilePage = () => {
+interface User {
+  id: number;
+  username: string;
+  email: string;
+  about_myself: string;
+  date_of_birth: string;
+  hometown: string;
+  present_location: string;
+  website: string;
+  gender: string;
+  interests: string;
+}
+
+interface ProfilePageProps {
+  user: User;
+}
+
+const ProfilePage = ({ user }: ProfilePageProps) => {
+  const rootStore = useStore();
+  const [isCurrentUser, setIsCurrentUser] = useState(false);
   const isAdminOrModerator = true; // Set to true
 
-  const user = {
-    name: 'John Doe',
-    username: 'johnny',
-    email: 'johndoe@example.com',
-    isCurrentUser: true, // Set to true for the current logged-in user
-    about: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-  };
+  const getUser = useCallback(async () => {
+    try {
+      await rootStore.users.getUsers();
+      setIsCurrentUser(true);
+    } catch (error) {
+      console.error('Error getting user:', error);
+      setIsCurrentUser(false);
+    }
+  }, [rootStore.users]);
+
+  useEffect(() => {
+    getUser();
+  }, [getUser]);
 
   const posts = [
     {
@@ -59,9 +85,9 @@ const UserProfilePage = () => {
       <div className="user-profile-page">
         <Card>
           <Card.Body>
-            <Card.Title>{user.name}</Card.Title>
+            <Card.Title>{user.username}</Card.Title>
             <Card.Text>Email: {user.email}</Card.Text>
-            {user.isCurrentUser && (
+            {isCurrentUser && (
               <div className="profile-form">
                 <Form>
                   {/* Profile form fields */}
@@ -74,7 +100,7 @@ const UserProfilePage = () => {
                     <Form.Control
                       as="textarea"
                       rows={3}
-                      defaultValue={user.about}
+                      defaultValue={user.about_myself}
                     />
                   </Form.Group>
                   {/* Add more profile form fields as needed */}
@@ -115,4 +141,4 @@ const UserProfilePage = () => {
   );
 };
 
-export default UserProfilePage;
+export default ProfilePage;

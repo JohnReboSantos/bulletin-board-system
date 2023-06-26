@@ -3,6 +3,7 @@ import { UserStore } from './UserStore';
 import { BoardStore } from './BoardStore';
 import { ThreadStore } from './ThreadStore';
 import { PostStore } from './PostStore';
+import { UsersStore } from './UsersStore';
 import { model, Model, prop, registerRootStore } from 'mobx-keystone';
 
 @model('RootStore')
@@ -11,6 +12,7 @@ class RootStore extends Model({
   boards: prop<BoardStore>(),
   threads: prop<ThreadStore>(),
   posts: prop<PostStore>(),
+  users: prop<UsersStore>(),
 }) {}
 
 const StoreContext = React.createContext<RootStore>({} as RootStore);
@@ -36,11 +38,13 @@ function createRootStore() {
   const boards = new BoardStore({});
   const threads = new ThreadStore({});
   const posts = new PostStore({});
+  const users = new UsersStore({});
   const rootStore = new RootStore({
     user,
     boards,
     threads,
     posts,
+    users,
   });
 
   registerRootStore(rootStore);
