@@ -1,5 +1,5 @@
 import React, { useEffect, useCallback, useMemo } from 'react';
-// import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../stores/RootStore';
 import {
@@ -54,7 +54,9 @@ const ThreadPage: React.FC<{
     return filteredPosts.map((post) => (
       <ListGroup.Item key={post.id}>
         <div className="d-flex justify-content-between align-items-center">
-          <div>{getUsername(parseInt(post.created_by))}</div>
+          <Link to={`/user_${post.created_by}`}>
+            <div>{getUsername(parseInt(post.created_by))}</div>
+          </Link>
           <div>
             <small>{post.created_at}</small>
           </div>
