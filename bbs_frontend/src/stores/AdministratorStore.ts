@@ -12,7 +12,7 @@ export class AdministratorStore extends Model({
   getAdministrators = _async(function* (this: AdministratorStore) {
     try {
       const response = yield* _await(
-        fetch('http://127.0.0.1:8000/api/administrators/'),
+        fetch(`${process.env.REACT_APP_BASE_API_URL}/administrators/`),
       );
       const data = yield* _await(response.json());
       this.administrators = data;

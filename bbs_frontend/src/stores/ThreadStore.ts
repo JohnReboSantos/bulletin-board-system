@@ -17,7 +17,7 @@ export class ThreadStore extends Model({
   getThreads = _async(function* (this: ThreadStore) {
     try {
       const response = yield* _await(
-        fetch('http://127.0.0.1:8000/api/threads/'),
+        fetch(`${process.env.REACT_APP_BASE_API_URL}/threads/`),
       );
       const data = yield* _await(response.json());
       const updatedData = data.map(
@@ -59,7 +59,7 @@ export class ThreadStore extends Model({
         locked: thread.locked,
       };
       const response = yield* _await(
-        fetch('http://127.0.0.1:8000/api/threads/', {
+        fetch(`${process.env.REACT_APP_BASE_API_URL}/threads/`, {
           body: JSON.stringify(updatedThread),
           headers: {
             'Content-Type': 'application/json',

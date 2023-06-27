@@ -16,7 +16,7 @@ export class BoardStore extends Model({
   getBoards = _async(function* (this: BoardStore) {
     try {
       const response = yield* _await(
-        fetch('http://127.0.0.1:8000/api/boards/'),
+        fetch(`${process.env.REACT_APP_BASE_API_URL}/boards/`),
       );
       const data = yield* _await(response.json());
       const updatedData = data.map(
@@ -49,7 +49,7 @@ export class BoardStore extends Model({
   }) {
     try {
       const response = yield* _await(
-        fetch('http://127.0.0.1:8000/api/boards/', {
+        fetch(`${process.env.REACT_APP_BASE_API_URL}/boards/`, {
           body: JSON.stringify(board),
           headers: {
             'Content-Type': 'application/json',

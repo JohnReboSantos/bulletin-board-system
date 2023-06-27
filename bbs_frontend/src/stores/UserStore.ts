@@ -29,7 +29,7 @@ export class UserStore extends Model({
       }
 
       const response = yield* _await(
-        fetch('http://127.0.0.1:8000/auth/user/', {
+        fetch(`${process.env.REACT_APP_BASE_AUTH_URL}/user/`, {
           credentials: 'include',
           headers: headers,
         }),
@@ -92,7 +92,7 @@ export class UserStore extends Model({
         interests: user.interests,
       };
       const response = yield* _await(
-        fetch('http://127.0.0.1:8000/auth/registration/', {
+        fetch(`${process.env.REACT_APP_BASE_AUTH_URL}/registration/`, {
           body: JSON.stringify(updatedUser),
           headers: {
             'Content-Type': 'application/json',
@@ -117,7 +117,7 @@ export class UserStore extends Model({
   ) {
     try {
       const response = yield* _await(
-        fetch('http://127.0.0.1:8000/auth/login/', {
+        fetch(`${process.env.REACT_APP_BASE_AUTH_URL}/login/`, {
           body: JSON.stringify(user),
           headers: {
             'Content-Type': 'application/json',
@@ -142,7 +142,7 @@ export class UserStore extends Model({
   logout = _async(function* () {
     try {
       const response = yield* _await(
-        fetch('http://127.0.0.1:8000/auth/logout/', {
+        fetch(`${process.env.REACT_APP_BASE_AUTH_URL}/logout/`, {
           headers: {
             'Content-Type': 'application/json',
           },

@@ -12,7 +12,7 @@ export class ModeratorStore extends Model({
   getModerators = _async(function* (this: ModeratorStore) {
     try {
       const response = yield* _await(
-        fetch('http://127.0.0.1:8000/api/moderators/'),
+        fetch(`${process.env.REACT_APP_BASE_API_URL}/moderators/`),
       );
       const data = yield* _await(response.json());
       this.moderators = data;

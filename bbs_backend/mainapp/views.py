@@ -19,18 +19,6 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
 
-    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAdminUser])
-    def ban(self, request, pk=None):
-        user = self.get_object()
-        # Implement your ban logic here
-        # Return appropriate response based on successful ban
-
-    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAdminUser])
-    def unban(self, request, pk=None):
-        user = self.get_object()
-        # Implement your unban logic here
-        # Return appropriate response based on successful unban
-
 
 class BoardViewSet(viewsets.ModelViewSet):
     queryset = Board.objects.all()

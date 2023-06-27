@@ -20,7 +20,9 @@ export class UsersStore extends Model({
   @modelFlow
   getUsers = _async(function* (this: UsersStore) {
     try {
-      const response = yield* _await(fetch('http://127.0.0.1:8000/api/users/'));
+      const response = yield* _await(
+        fetch(`${process.env.REACT_APP_BASE_API_URL}/users/`),
+      );
       const data = yield* _await(response.json());
       const updatedData = data.map(
         (user: {

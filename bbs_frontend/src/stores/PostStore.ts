@@ -15,7 +15,9 @@ export class PostStore extends Model({
   @modelFlow
   getPosts = _async(function* (this: PostStore) {
     try {
-      const response = yield* _await(fetch('http://127.0.0.1:8000/api/posts/'));
+      const response = yield* _await(
+        fetch(`${process.env.REACT_APP_BASE_API_URL}/posts/`),
+      );
       const data = yield* _await(response.json());
       const updatedData = data.map(
         (post: {
@@ -52,7 +54,7 @@ export class PostStore extends Model({
         created_by: thread.createdBy,
       };
       const response = yield* _await(
-        fetch('http://127.0.0.1:8000/api/posts/', {
+        fetch(`${process.env.REACT_APP_BASE_API_URL}/posts/`, {
           body: JSON.stringify(updatedThread),
           headers: {
             'Content-Type': 'application/json',

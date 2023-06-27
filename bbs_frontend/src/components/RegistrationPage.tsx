@@ -49,6 +49,8 @@ const RegistrationPage = () => {
         }
       };
 
+      // const postPoster = async ()
+
       register(formData);
       setIsRegistered(true);
     },
