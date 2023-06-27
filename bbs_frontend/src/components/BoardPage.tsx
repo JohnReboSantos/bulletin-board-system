@@ -3,8 +3,7 @@ import { Link } from 'react-router-dom';
 import localForage from 'localforage';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../stores/RootStore';
-import { useGetBoardName } from './utils';
-import { useIsAdminOrMod } from './utils';
+import { useGetBoardName, useIsPoster, useIsAdminOrMod } from './utils';
 import {
   Card,
   ListGroup,
@@ -25,6 +24,7 @@ const BoardPage: React.FC<{
 }> = ({ board }) => {
   const rootStore = useStore();
   const isAdminOrMod = useIsAdminOrMod();
+  const isPoster = useIsPoster();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const getBoardName = useGetBoardName();
 
@@ -122,7 +122,7 @@ const BoardPage: React.FC<{
         <Card>
           <ListGroup variant="flush">{renderThreads()}</ListGroup>
         </Card>
-        {isLoggedIn && (
+        {isPoster(rootStore.user.user.id) && (
           <div className="createthread-form">
             <Form>
               <Form.Group controlId="createThread">

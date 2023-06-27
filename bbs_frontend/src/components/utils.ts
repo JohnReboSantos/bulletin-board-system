@@ -58,6 +58,37 @@ export const useGetUsername = () => {
   return getUsername;
 };
 
+export const useIsPoster = () => {
+  const rootStore = useStore();
+
+  const getPosters = useCallback(async () => {
+    try {
+      await rootStore.posters.getPosters();
+    } catch (error) {
+      console.error('Error getting posters:', error);
+    }
+  }, [rootStore.posters]);
+
+  useEffect(() => {
+    getPosters();
+  }, [getPosters]);
+
+  const memoizedPosters = useMemo(
+    () => rootStore.posters.posters,
+    [rootStore.posters.posters],
+  );
+
+  const isPoster = useCallback(
+    (userId: number) => {
+      const poster = memoizedPosters.find((poster) => poster.user === userId);
+      return poster ? true : false;
+    },
+    [memoizedPosters],
+  );
+
+  return isPoster;
+};
+
 export const useIsAdmin = () => {
   const rootStore = useStore();
 
