@@ -46,7 +46,7 @@ export class PosterStore extends Model({
   deletePoster = _async(function* (userId: number) {
     try {
       const response = yield* _await(
-        fetch(`${process.env.REACT_APP_BASE_API_URL}/posters/`, {
+        fetch(`${process.env.REACT_APP_BASE_API_URL}/posters/${userId}`, {
           body: JSON.stringify({ user: userId }),
           headers: {
             'Content-Type': 'application/json',
@@ -55,12 +55,12 @@ export class PosterStore extends Model({
         }),
       );
       if (response.ok) {
-        console.log('New poster');
+        console.log('Poster banned');
       } else {
         console.log('Failed Network Request');
       }
     } catch (error) {
-      console.log('Error new poster:', error);
+      console.log('Error banning poster:', error);
     }
   });
 }

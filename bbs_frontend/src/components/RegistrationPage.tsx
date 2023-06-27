@@ -44,15 +44,17 @@ const RegistrationPage = () => {
       const register = async (formData: User) => {
         try {
           await rootStore.user.register(formData);
+          await rootStore.user.login({
+            email: formData.email,
+            password: formData.password1,
+          });
+          setIsRegistered(true);
         } catch (error) {
           console.error('Registration error:', error);
         }
       };
 
-      // const postPoster = async ()
-
       register(formData);
-      setIsRegistered(true);
     },
     [formData, rootStore.user],
   );

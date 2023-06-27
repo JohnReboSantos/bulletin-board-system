@@ -83,6 +83,8 @@ export class UserStore extends Model({
       const updatedUser = {
         username: user.username,
         email: user.email,
+        password1: user.password1,
+        password2: user.password2,
         about_myself: user.aboutMyself,
         date_of_birth: user.dateOfBirth,
         hometown: user.hometown,
@@ -91,6 +93,8 @@ export class UserStore extends Model({
         gender: user.gender,
         interests: user.interests,
       };
+      console.log('updatedUser for reg', updatedUser);
+      console.log('updatedUser for reg JSON', JSON.stringify(updatedUser));
       const response = yield* _await(
         fetch(`${process.env.REACT_APP_BASE_AUTH_URL}/registration/`, {
           body: JSON.stringify(updatedUser),
