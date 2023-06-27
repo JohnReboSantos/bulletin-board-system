@@ -2,8 +2,8 @@ import { model, Model, prop, modelFlow, _async, _await } from 'mobx-keystone';
 
 interface Post {
   id: number;
-  thread: string;
-  createdBy: string;
+  thread: number;
+  createdBy: number;
   createdAt: string;
   message: string;
 }
@@ -22,8 +22,8 @@ export class PostStore extends Model({
       const updatedData = data.map(
         (post: {
           id: number;
-          thread: string;
-          created_by: string;
+          thread: number;
+          created_by: number;
           created_at: string;
           message: string;
         }) => ({
@@ -45,7 +45,7 @@ export class PostStore extends Model({
   postPost = _async(function* (thread: {
     thread: string;
     message: string;
-    createdBy: string;
+    createdBy: number;
   }) {
     try {
       const updatedThread = {

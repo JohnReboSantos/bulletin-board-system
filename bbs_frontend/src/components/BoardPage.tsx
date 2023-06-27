@@ -25,8 +25,14 @@ const BoardPage: React.FC<{
   const rootStore = useStore();
   const isAdminOrMod = useIsAdminOrMod();
   const isPoster = useIsPoster();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const getBoardName = useGetBoardName();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [formData, setFormData] = useState({
+    title: '',
+    board: board.id,
+    createdBy: 0,
+    locked: false,
+  });
 
   const getUser = useCallback(async () => {
     try {
@@ -47,6 +53,33 @@ const BoardPage: React.FC<{
     [rootStore.threads.threads],
   );
 
+  const handleCreateThread = useCallback(
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      const createThread = async (thread: {
+        title: string;
+        board: number;
+        createdBy: number;
+        locked: boolean;
+      }) => {
+        try {
+          await rootStore.threads.postThread(thread);
+          await rootStore.threads.getThreads();
+        } catch (error) {
+          console.error('Error creating thread:', error);
+        }
+      };
+      createThread(formData);
+      setFormData({
+        title: '',
+        board: board.id,
+        createdBy: 0,
+        locked: false,
+      });
+    },
+    [board.id, formData, rootStore.threads],
+  );
+
   const handleLogout = useCallback(() => {
     localForage
       .removeItem('authToken')
@@ -61,7 +94,7 @@ const BoardPage: React.FC<{
 
   const renderThreads = useCallback(() => {
     const filteredThreads = memoizedThreads.filter(
-      (thread) => getBoardName(parseInt(thread.board)) === board.name,
+      (thread) => getBoardName(thread.board) === board.name,
     );
     return filteredThreads.map((thread) => (
       <ListGroup.Item key={thread.id}>
@@ -124,10 +157,21 @@ const BoardPage: React.FC<{
         </Card>
         {isPoster(rootStore.user.user.id) && (
           <div className="createthread-form">
-            <Form>
+            <Form onSubmit={handleCreateThread}>
               <Form.Group controlId="createThread">
                 <Form.Label>Create thread</Form.Label>
-                <Form.Control as="textarea" />
+                <Form.Control
+                  as="textarea"
+                  placeholder="thread title"
+                  value={formData.title}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      title: e.target.value,
+                      createdBy: rootStore.user.user.id,
+                    })
+                  }
+                />
               </Form.Group>
               <Button variant="primary" type="submit">
                 Create

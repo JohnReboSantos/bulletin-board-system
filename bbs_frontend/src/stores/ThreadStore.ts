@@ -3,8 +3,8 @@ import { model, Model, prop, modelFlow, _async, _await } from 'mobx-keystone';
 interface Thread {
   id: number;
   title: string;
-  board: string;
-  createdBy: string;
+  board: number;
+  createdBy: number;
   createdAt: string;
   locked: boolean;
 }
@@ -24,8 +24,8 @@ export class ThreadStore extends Model({
         (thread: {
           id: number;
           title: string;
-          board: string;
-          created_by: string;
+          board: number;
+          created_by: number;
           created_at: string;
           locked: boolean;
         }) => ({
@@ -47,8 +47,8 @@ export class ThreadStore extends Model({
   @modelFlow
   postThread = _async(function* (thread: {
     title: string;
-    board: string;
-    createdBy: string;
+    board: number;
+    createdBy: number;
     locked: boolean;
   }) {
     try {
@@ -66,6 +66,10 @@ export class ThreadStore extends Model({
           },
           method: 'POST',
         }),
+      );
+      console.log(
+        'JSON.stringify(updatedThread):',
+        JSON.stringify(updatedThread),
       );
       if (response.ok) {
         console.log('Posted thread successfully');

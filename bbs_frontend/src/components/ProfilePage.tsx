@@ -84,7 +84,7 @@ const ProfilePage = ({ user }: ProfilePageProps) => {
 
   const renderPosts = useCallback(() => {
     const filteredPosts = memoizedPosts.filter(
-      (post) => parseInt(post.createdBy) === user.id,
+      (post) => post.createdBy === user.id,
     );
     return filteredPosts.map((post) => (
       <ListGroup.Item key={post.id}>

@@ -16,8 +16,8 @@ const ThreadPage: React.FC<{
   thread: {
     id: number;
     title: string;
-    board: string;
-    createdBy: string;
+    board: number;
+    createdBy: number;
     createdAt: string;
     locked: boolean;
   };
@@ -61,14 +61,14 @@ const ThreadPage: React.FC<{
 
   const renderPosts = useCallback(() => {
     const filteredPosts = memoizedPosts.filter(
-      (post) => getThreadTitle(parseInt(post.thread)) === thread.title,
+      (post) => getThreadTitle(post.thread) === thread.title,
     );
 
     return filteredPosts.map((post) => (
       <ListGroup.Item key={post.id}>
         <div className="d-flex justify-content-between align-items-center">
           <Link to={`/user_${post.createdBy}`}>
-            <div>{getUsername(parseInt(post.createdBy))}</div>
+            <div>{getUsername(post.createdBy)}</div>
           </Link>
           <div>
             <small>{post.createdAt}</small>
@@ -93,7 +93,7 @@ const ThreadPage: React.FC<{
       </Navbar>
       <div className="thread-index-page">
         <h2>{thread.title}</h2>
-        <h4>Board: {getBoardName(parseInt(thread.board))}</h4>
+        <h4>Board: {getBoardName(thread.board)}</h4>
         <Card>
           <ListGroup variant="flush">{renderPosts()}</ListGroup>
         </Card>

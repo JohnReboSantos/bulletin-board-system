@@ -59,7 +59,7 @@ const HomePage: React.FC<{
           await rootStore.boards.postBoard(board);
           await rootStore.boards.getBoards();
         } catch (error) {
-          console.error('Error creating boards:', error);
+          console.error('Error creating board:', error);
         }
       };
       createBoard(formData);
