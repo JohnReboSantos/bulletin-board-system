@@ -24,6 +24,11 @@ const ThreadPage: React.FC<{
 }> = ({ thread }) => {
   const rootStore = useStore();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [formData, setFormData] = useState({
+    thread: thread.id,
+    message: '',
+    createdBy: 0,
+  });
   const getBoardName = useGetBoardName();
   const getThreadTitle = useGetThreadTitle();
   const getUsername = useGetUsername();
@@ -53,6 +58,26 @@ const ThreadPage: React.FC<{
   useEffect(() => {
     getPosts();
   }, [getPosts]);
+
+  const handlePostReply = useCallback(
+    (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      const postReply = async (post: {
+        thread: number;
+        message: string;
+        createdBy: number;
+      }) => {
+        try {
+          await rootStore.posts.postPost(post);
+          await rootStore.posts.getPosts();
+        } catch (error) {
+          console.error('Error posting reply:', error);
+        }
+      };
+      postReply(formData);
+    },
+    [formData, rootStore.posts],
+  );
 
   const memoizedPosts = useMemo(
     () => rootStore.posts.posts,
@@ -99,10 +124,21 @@ const ThreadPage: React.FC<{
         </Card>
         {isLoggedIn && !thread.locked && (
           <div className="reply-form">
-            <Form>
+            <Form onSubmit={handlePostReply}>
               <Form.Group controlId="postMessage">
                 <Form.Label>Post Message</Form.Label>
-                <Form.Control as="textarea" rows={3} />
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  value={formData.message}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      message: e.target.value,
+                      createdBy: rootStore.user.user.id,
+                    })
+                  }
+                />
               </Form.Group>
               <Button variant="primary" type="submit">
                 Reply

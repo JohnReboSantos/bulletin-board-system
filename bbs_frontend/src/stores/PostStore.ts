@@ -42,20 +42,20 @@ export class PostStore extends Model({
   });
 
   @modelFlow
-  postPost = _async(function* (thread: {
-    thread: string;
+  postPost = _async(function* (post: {
+    thread: number;
     message: string;
     createdBy: number;
   }) {
     try {
-      const updatedThread = {
-        thread: thread.thread,
-        message: thread.message,
-        created_by: thread.createdBy,
+      const updatedPost = {
+        thread: post.thread,
+        message: post.message,
+        created_by: post.createdBy,
       };
       const response = yield* _await(
         fetch(`${process.env.REACT_APP_BASE_API_URL}/posts/`, {
-          body: JSON.stringify(updatedThread),
+          body: JSON.stringify(updatedPost),
           headers: {
             'Content-Type': 'application/json',
           },
