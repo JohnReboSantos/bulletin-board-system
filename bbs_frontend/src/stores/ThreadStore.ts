@@ -67,10 +67,6 @@ export class ThreadStore extends Model({
           method: 'POST',
         }),
       );
-      console.log(
-        'JSON.stringify(updatedThread):',
-        JSON.stringify(updatedThread),
-      );
       if (response.ok) {
         console.log('Posted thread successfully');
       } else {
@@ -78,6 +74,28 @@ export class ThreadStore extends Model({
       }
     } catch (error) {
       console.log('Error posting thread:', error);
+    }
+  });
+
+  @modelFlow
+  patchThread = _async(function* (threadId: number) {
+    try {
+      const response = yield* _await(
+        fetch(`${process.env.REACT_APP_BASE_API_URL}/threads/${threadId}/`, {
+          body: JSON.stringify({ locked: true }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          method: 'PATCH',
+        }),
+      );
+      if (response.ok) {
+        console.log('Locked thread successfully');
+      } else {
+        console.log('Failed Network Request');
+      }
+    } catch (error) {
+      console.log('Error locking thread:', error);
     }
   });
 }

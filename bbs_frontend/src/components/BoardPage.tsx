@@ -53,6 +53,18 @@ const BoardPage: React.FC<{
     [rootStore.threads.threads],
   );
 
+  const handleLockThread = useCallback(
+    async (threadId: number) => {
+      try {
+        await rootStore.threads.patchThread(threadId);
+        await rootStore.threads.getThreads();
+      } catch (error) {
+        console.error('Error locking thread:', error);
+      }
+    },
+    [rootStore.threads],
+  );
+
   const handleCreateThread = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
@@ -111,14 +123,20 @@ const BoardPage: React.FC<{
             Last reply: {/* last reply */} by {/* last replier name*/}
           </small>
         </div>
-        {isAdminOrMod(rootStore.user.user.id) && (
-          <Button variant="secondary">Lock thread</Button>
+        {!thread.locked && isAdminOrMod(rootStore.user.user.id) && (
+          <Button
+            variant="secondary"
+            onClick={() => handleLockThread(thread.id)}
+          >
+            Lock thread
+          </Button>
         )}
       </ListGroup.Item>
     ));
   }, [
     board.name,
     getBoardName,
+    handleLockThread,
     isAdminOrMod,
     memoizedThreads,
     rootStore.user.user.id,
