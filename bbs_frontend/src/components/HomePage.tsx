@@ -21,7 +21,7 @@ const HomePage: React.FC<{
     name: string;
     topic: string;
     description: string;
-    created_at: string;
+    createdAt: string;
   }[];
 }> = ({ boards }) => {
   interface Board {
@@ -29,7 +29,7 @@ const HomePage: React.FC<{
     name: string;
     topic: string;
     description: string;
-    created_at: string;
+    createdAt: string;
   }
   const rootStore = useStore();
   const IsAdmin = useIsAdmin();

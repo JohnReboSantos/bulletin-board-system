@@ -17,10 +17,10 @@ interface User {
   id: number;
   username: string;
   email: string;
-  about_myself: string;
-  date_of_birth: string;
+  aboutMyself: string;
+  dateOfBirth: string;
   hometown: string;
-  present_location: string;
+  presentLocation: string;
   website: string;
   gender: string;
   interests: string;
@@ -84,13 +84,13 @@ const ProfilePage = ({ user }: ProfilePageProps) => {
 
   const renderPosts = useCallback(() => {
     const filteredPosts = memoizedPosts.filter(
-      (post) => parseInt(post.created_by) === user.id,
+      (post) => parseInt(post.createdBy) === user.id,
     );
     return filteredPosts.map((post) => (
       <ListGroup.Item key={post.id}>
         <div>{post.message}</div>
         <div>
-          <small>{post.created_at}</small>
+          <small>{post.createdAt}</small>
         </div>
       </ListGroup.Item>
     ));
@@ -140,15 +140,12 @@ const ProfilePage = ({ user }: ProfilePageProps) => {
                     <Form.Control
                       as="textarea"
                       rows={3}
-                      defaultValue={user.about_myself}
+                      defaultValue={user.aboutMyself}
                     />
                   </Form.Group>
                   <Form.Group controlId="formDateOfBirth">
                     <Form.Label>Date of Birth</Form.Label>
-                    <Form.Control
-                      type="date"
-                      defaultValue={user.date_of_birth}
-                    />
+                    <Form.Control type="date" defaultValue={user.dateOfBirth} />
                   </Form.Group>
                   <Form.Group controlId="formHometown">
                     <Form.Label>Hometown</Form.Label>
@@ -158,7 +155,7 @@ const ProfilePage = ({ user }: ProfilePageProps) => {
                     <Form.Label>Present Location</Form.Label>
                     <Form.Control
                       type="text"
-                      defaultValue={user.present_location}
+                      defaultValue={user.presentLocation}
                     />
                   </Form.Group>
                   <Form.Group controlId="formWebsite">

@@ -17,8 +17,8 @@ const ThreadPage: React.FC<{
     id: number;
     title: string;
     board: string;
-    created_by: string;
-    created_at: string;
+    createdBy: string;
+    createdAt: string;
     locked: boolean;
   };
 }> = ({ thread }) => {
@@ -67,11 +67,11 @@ const ThreadPage: React.FC<{
     return filteredPosts.map((post) => (
       <ListGroup.Item key={post.id}>
         <div className="d-flex justify-content-between align-items-center">
-          <Link to={`/user_${post.created_by}`}>
-            <div>{getUsername(parseInt(post.created_by))}</div>
+          <Link to={`/user_${post.createdBy}`}>
+            <div>{getUsername(parseInt(post.createdBy))}</div>
           </Link>
           <div>
-            <small>{post.created_at}</small>
+            <small>{post.createdAt}</small>
           </div>
         </div>
         <div className="mt-2">{post.message}</div>

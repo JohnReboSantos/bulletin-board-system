@@ -5,10 +5,10 @@ interface User {
   id: number;
   username: string;
   email: string;
-  about_myself: string;
-  date_of_birth: string;
+  aboutMyself: string;
+  dateOfBirth: string;
   hometown: string;
-  present_location: string;
+  presentLocation: string;
   website: string;
   gender: string;
   interests: string;
@@ -28,8 +28,6 @@ export class UserStore extends Model({
         headers.append('Authorization', `Token ${storedToken}`);
       }
 
-      console.log('headers:', headers);
-
       const response = yield* _await(
         fetch('http://127.0.0.1:8000/auth/user/', {
           credentials: 'include',
@@ -37,18 +35,29 @@ export class UserStore extends Model({
         }),
       );
       const data = yield* _await(response.json());
-      this.user = data;
-      console.log('User logged in:', data);
+      const updatedUser: User = {
+        id: data.id,
+        username: data.username,
+        email: data.email,
+        aboutMyself: data.about_myself,
+        dateOfBirth: data.date_of_birth,
+        hometown: data.hometown,
+        presentLocation: data.present_location,
+        website: data.website,
+        gender: data.gender,
+        interests: data.interests,
+      };
+      this.user = updatedUser;
     } catch (error) {
       console.log('Error getting user:', error);
       this.user = {
         id: 0,
         username: '',
         email: '',
-        about_myself: '',
-        date_of_birth: '',
+        aboutMyself: '',
+        dateOfBirth: '',
         hometown: '',
-        present_location: '',
+        presentLocation: '',
         website: '',
         gender: '',
         interests: '',
@@ -62,18 +71,29 @@ export class UserStore extends Model({
     email: string;
     password1: string;
     password2: string;
-    about_myself: string;
-    date_of_birth: string;
+    aboutMyself: string;
+    dateOfBirth: string;
     hometown: string;
-    present_location: string;
+    presentLocation: string;
     website: string;
     gender: string;
     interests: string;
   }) {
     try {
+      const updatedUser = {
+        username: user.username,
+        email: user.email,
+        about_myself: user.aboutMyself,
+        date_of_birth: user.dateOfBirth,
+        hometown: user.hometown,
+        present_location: user.presentLocation,
+        website: user.website,
+        gender: user.gender,
+        interests: user.interests,
+      };
       const response = yield* _await(
         fetch('http://127.0.0.1:8000/auth/registration/', {
-          body: JSON.stringify(user),
+          body: JSON.stringify(updatedUser),
           headers: {
             'Content-Type': 'application/json',
           },
@@ -106,14 +126,8 @@ export class UserStore extends Model({
         }),
       );
       const data = yield* _await(response.json());
-      console.log('login response:', data);
       this.key = data['key'];
-      console.log('this.key:', this.key);
       localForage.setItem('authToken', this.key);
-      console.log(
-        'localForage.setItem',
-        localForage.setItem('authToken', this.key),
-      );
       if (response.ok) {
         alert('Logged in successfully');
       } else {

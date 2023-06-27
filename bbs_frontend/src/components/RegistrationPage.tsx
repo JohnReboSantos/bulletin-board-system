@@ -13,10 +13,10 @@ const RegistrationPage = () => {
     email: '',
     password1: '',
     password2: '',
-    about_myself: '',
-    date_of_birth: '',
+    aboutMyself: '',
+    dateOfBirth: '',
     hometown: '',
-    present_location: '',
+    presentLocation: '',
     website: '',
     gender: '',
     interests: '',
@@ -27,10 +27,10 @@ const RegistrationPage = () => {
     email: string;
     password1: string;
     password2: string;
-    about_myself: string;
-    date_of_birth: string;
+    aboutMyself: string;
+    dateOfBirth: string;
     hometown: string;
-    present_location: string;
+    presentLocation: string;
     website: string;
     gender: string;
     interests: string;
@@ -129,9 +129,9 @@ const RegistrationPage = () => {
               as="textarea"
               rows={3}
               placeholder="Enter about myself"
-              value={formData.about_myself}
+              value={formData.aboutMyself}
               onChange={(e) =>
-                setFormData({ ...formData, about_myself: e.target.value })
+                setFormData({ ...formData, aboutMyself: e.target.value })
               }
             />
           </Form.Group>
@@ -140,9 +140,9 @@ const RegistrationPage = () => {
             <Form.Label>Date of Birth</Form.Label>
             <Form.Control
               type="date"
-              value={formData.date_of_birth}
+              value={formData.dateOfBirth}
               onChange={(e) =>
-                setFormData({ ...formData, date_of_birth: e.target.value })
+                setFormData({ ...formData, dateOfBirth: e.target.value })
               }
             />
           </Form.Group>
@@ -164,9 +164,9 @@ const RegistrationPage = () => {
             <Form.Control
               type="text"
               placeholder="Enter present location"
-              value={formData.present_location}
+              value={formData.presentLocation}
               onChange={(e) =>
-                setFormData({ ...formData, present_location: e.target.value })
+                setFormData({ ...formData, presentLocation: e.target.value })
               }
             />
           </Form.Group>

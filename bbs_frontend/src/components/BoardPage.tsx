@@ -20,7 +20,7 @@ const BoardPage: React.FC<{
     name: string;
     topic: string;
     description: string;
-    created_at: string;
+    createdAt: string;
   };
 }> = ({ board }) => {
   const rootStore = useStore();

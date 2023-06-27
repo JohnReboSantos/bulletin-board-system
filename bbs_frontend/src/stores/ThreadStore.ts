@@ -4,8 +4,8 @@ interface Thread {
   id: number;
   title: string;
   board: string;
-  created_by: string;
-  created_at: string;
+  createdBy: string;
+  createdAt: string;
   locked: boolean;
 }
 
@@ -20,7 +20,24 @@ export class ThreadStore extends Model({
         fetch('http://127.0.0.1:8000/api/threads/'),
       );
       const data = yield* _await(response.json());
-      this.threads = data;
+      const updatedData = data.map(
+        (thread: {
+          id: number;
+          title: string;
+          board: string;
+          created_by: string;
+          created_at: string;
+          locked: boolean;
+        }) => ({
+          id: thread.id,
+          title: thread.title,
+          board: thread.board,
+          createdBy: thread.created_by,
+          createdAt: thread.created_at,
+          locked: thread.locked,
+        }),
+      );
+      this.threads = updatedData;
     } catch (error) {
       console.log('Error getting threads:', error);
       this.threads = [];
@@ -31,12 +48,19 @@ export class ThreadStore extends Model({
   postThread = _async(function* (thread: {
     title: string;
     board: string;
+    createdBy: string;
     locked: boolean;
   }) {
     try {
+      const updatedThread = {
+        title: thread.title,
+        board: thread.board,
+        created_by: thread.createdBy,
+        locked: thread.locked,
+      };
       const response = yield* _await(
         fetch('http://127.0.0.1:8000/api/threads/', {
-          body: JSON.stringify(thread),
+          body: JSON.stringify(updatedThread),
           headers: {
             'Content-Type': 'application/json',
           },
