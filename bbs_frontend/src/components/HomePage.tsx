@@ -24,16 +24,14 @@ const HomePage: React.FC<{
     createdAt: string;
   }[];
 }> = ({ boards }) => {
-  interface Board {
-    id: number;
-    name: string;
-    topic: string;
-    description: string;
-    createdAt: string;
-  }
   const rootStore = useStore();
   const IsAdmin = useIsAdmin();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    topic: '',
+    description: '',
+  });
 
   const getUser = useCallback(async () => {
     try {
@@ -48,6 +46,26 @@ const HomePage: React.FC<{
   useEffect(() => {
     getUser();
   }, [getUser]);
+
+  const handleCreateBoard = useCallback(
+    (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      const createBoard = async (board: {
+        name: string;
+        topic: string;
+        description: string;
+      }) => {
+        try {
+          await rootStore.boards.postBoard(board);
+          await rootStore.boards.getBoards();
+        } catch (error) {
+          console.error('Error creating boards:', error);
+        }
+      };
+      createBoard(formData);
+    },
+    [formData, rootStore.boards],
+  );
 
   const handleRemoveBoard = useCallback(
     async (boardId: number) => {
@@ -74,7 +92,13 @@ const HomePage: React.FC<{
   }, []);
 
   const renderTooltip = useCallback(
-    (board: Board) => (
+    (board: {
+      id: number;
+      name: string;
+      topic: string;
+      description: string;
+      createdAt: string;
+    }) => (
       <Tooltip>
         <Card.Title>{board.name}</Card.Title>
         <Card.Text>{board.description}</Card.Text>
@@ -147,18 +171,36 @@ const HomePage: React.FC<{
         ))}
         {IsAdmin(rootStore.user.user.id) && (
           <div className="createboard-form">
-            <Form>
+            <Form onSubmit={handleCreateBoard}>
               <Form.Group controlId="formBoardName">
                 <Form.Label>Board name</Form.Label>
-                <Form.Control as="textarea" />
+                <Form.Control
+                  as="textarea"
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
+                />
               </Form.Group>
               <Form.Group controlId="formBoardTopic">
                 <Form.Label>Board topic</Form.Label>
-                <Form.Control as="textarea" />
+                <Form.Control
+                  as="textarea"
+                  value={formData.topic}
+                  onChange={(e) =>
+                    setFormData({ ...formData, topic: e.target.value })
+                  }
+                />
               </Form.Group>
               <Form.Group controlId="formBoardDescription">
                 <Form.Label>Board description</Form.Label>
-                <Form.Control as="textarea" />
+                <Form.Control
+                  as="textarea"
+                  value={formData.description}
+                  onChange={(e) =>
+                    setFormData({ ...formData, description: e.target.value })
+                  }
+                />
               </Form.Group>
               <Button variant="primary" type="submit">
                 Create board

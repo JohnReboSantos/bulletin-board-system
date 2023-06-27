@@ -22,31 +22,29 @@ const RegistrationPage = () => {
     interests: '',
   });
 
-  interface User {
-    username: string;
-    email: string;
-    password1: string;
-    password2: string;
-    aboutMyself: string;
-    dateOfBirth: string;
-    hometown: string;
-    presentLocation: string;
-    website: string;
-    gender: string;
-    interests: string;
-  }
-
   const handleSubmit = useCallback(
     async (e: any) => {
       e.preventDefault();
       console.log(formData);
 
-      const register = async (formData: User) => {
+      const register = async (user: {
+        username: string;
+        email: string;
+        password1: string;
+        password2: string;
+        aboutMyself: string;
+        dateOfBirth: string;
+        hometown: string;
+        presentLocation: string;
+        website: string;
+        gender: string;
+        interests: string;
+      }) => {
         try {
-          await rootStore.user.register(formData);
+          await rootStore.user.register(user);
           await rootStore.user.login({
-            email: formData.email,
-            password: formData.password1,
+            email: user.email,
+            password: user.password1,
           });
           await rootStore.user.getUser();
           await rootStore.posters.postPoster(rootStore.user.user.id);
