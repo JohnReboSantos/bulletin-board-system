@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser, Board, Thread, Post, Administrator, Moderator
+from .models import CustomUser, Board, Thread, Post, Administrator, Moderator, Poster
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -50,4 +50,9 @@ class AdministratorSerializer(serializers.ModelSerializer):
 class ModeratorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Moderator
+        fields = ('user',)
+
+class PosterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Poster
         fields = ('user',)
