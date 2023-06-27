@@ -48,6 +48,8 @@ const RegistrationPage = () => {
             email: formData.email,
             password: formData.password1,
           });
+          await rootStore.user.getUser();
+          await rootStore.posters.postPoster(rootStore.user.user.id);
           setIsRegistered(true);
         } catch (error) {
           console.error('Registration error:', error);
