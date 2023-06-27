@@ -49,6 +49,18 @@ const HomePage: React.FC<{
     getUser();
   }, [getUser]);
 
+  const handleRemoveBoard = useCallback(
+    async (boardId: number) => {
+      try {
+        await rootStore.boards.deleteBoard(boardId);
+        await rootStore.boards.getBoards();
+      } catch (error) {
+        console.error('Error removing board:', error);
+      }
+    },
+    [rootStore.boards],
+  );
+
   const handleLogout = useCallback(() => {
     localForage
       .removeItem('authToken')
@@ -106,7 +118,7 @@ const HomePage: React.FC<{
 
       <div className="board-list">
         {boards.map((board) => (
-          <React.Fragment key={board.id}>
+          <div key={board.id}>
             <OverlayTrigger
               key={board.id}
               placement="bottom"
@@ -124,9 +136,14 @@ const HomePage: React.FC<{
               </Card>
             </OverlayTrigger>
             {IsAdmin(rootStore.user.user.id) && (
-              <Button variant="secondary">Remove board</Button>
+              <Button
+                variant="secondary"
+                onClick={() => handleRemoveBoard(board.id)}
+              >
+                Remove board
+              </Button>
             )}
-          </React.Fragment>
+          </div>
         ))}
         {IsAdmin(rootStore.user.user.id) && (
           <div className="createboard-form">

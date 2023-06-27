@@ -1,10 +1,13 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { Form, Button, Navbar } from 'react-bootstrap';
 import { useStore } from '../stores/RootStore';
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
   const rootStore = useStore();
+  const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [formData, setFormData] = useState({ email: '', password: '' });
 
   interface User {
@@ -19,6 +22,7 @@ const LoginPage = () => {
       const login = async (formData: User) => {
         try {
           await rootStore.user.login(formData);
+          setIsLoggedIn(true);
         } catch (error) {
           console.error('Login error:', error);
         }
@@ -28,6 +32,12 @@ const LoginPage = () => {
     },
     [formData, rootStore.user],
   );
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate('/');
+    }
+  }, [isLoggedIn, navigate]);
 
   return (
     <div>

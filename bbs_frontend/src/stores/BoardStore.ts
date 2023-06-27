@@ -66,4 +66,25 @@ export class BoardStore extends Model({
       console.log('Error posting board:', error);
     }
   });
+
+  @modelFlow
+  deleteBoard = _async(function* (boardId: number) {
+    try {
+      const response = yield* _await(
+        fetch(`${process.env.REACT_APP_BASE_API_URL}/boards/${boardId}`, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          method: 'DELETE',
+        }),
+      );
+      if (response.ok) {
+        console.log('Removed board successfully');
+      } else {
+        console.log('Failed Network Request');
+      }
+    } catch (error) {
+      console.log('Error removing board:', error);
+    }
+  });
 }

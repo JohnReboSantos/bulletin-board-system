@@ -58,7 +58,7 @@ const RegistrationPage = () => {
 
       register(formData);
     },
-    [formData, rootStore.user],
+    [formData, rootStore.posters, rootStore.user],
   );
 
   useEffect(() => {
