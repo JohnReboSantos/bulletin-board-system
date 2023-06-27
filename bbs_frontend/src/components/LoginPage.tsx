@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { Form, Button, Navbar } from 'react-bootstrap';
 import { useStore } from '../stores/RootStore';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
   const rootStore = useStore();
@@ -22,7 +22,8 @@ const LoginPage = () => {
       const login = async (formData: User) => {
         try {
           await rootStore.user.login(formData);
-          setIsLoggedIn(true);
+          await rootStore.user.getUser();
+          rootStore.user.user.id ? setIsLoggedIn(true) : setIsLoggedIn(false);
         } catch (error) {
           console.error('Login error:', error);
         }
@@ -46,8 +47,9 @@ const LoginPage = () => {
         <Navbar.Toggle aria-controls="navbar-nav" />
         <Navbar.Collapse id="navbar-nav">
           <Navbar.Collapse className="justify-content-end">
-            <Button variant="primary">Log in</Button>
-            <Button variant="primary">Register</Button>
+            <Link to="/register">
+              <Button variant="primary">Register</Button>
+            </Link>
           </Navbar.Collapse>
         </Navbar.Collapse>
       </Navbar>

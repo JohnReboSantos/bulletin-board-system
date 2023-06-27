@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Form, Button, Navbar } from 'react-bootstrap';
 import { useStore } from '../stores/RootStore';
 
@@ -48,7 +48,9 @@ const RegistrationPage = () => {
           });
           await rootStore.user.getUser();
           await rootStore.posters.postPoster(rootStore.user.user.id);
-          setIsRegistered(true);
+          rootStore.user.user.id
+            ? setIsRegistered(true)
+            : setIsRegistered(false);
         } catch (error) {
           console.error('Registration error:', error);
         }
@@ -72,7 +74,9 @@ const RegistrationPage = () => {
         <Navbar.Toggle aria-controls="navbar-nav" />
         <Navbar.Collapse id="navbar-nav">
           <Navbar.Collapse className="justify-content-end">
-            <Button variant="primary">Log in</Button>
+            <Link to="/login">
+              <Button variant="primary">Log in</Button>
+            </Link>
           </Navbar.Collapse>
         </Navbar.Collapse>
       </Navbar>

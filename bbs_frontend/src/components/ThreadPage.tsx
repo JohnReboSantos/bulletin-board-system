@@ -2,6 +2,7 @@ import React, { useEffect, useCallback, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../stores/RootStore';
+import localForage from 'localforage';
 import {
   Card,
   ListGroup,
@@ -84,6 +85,18 @@ const ThreadPage: React.FC<{
     [rootStore.posts.posts],
   );
 
+  const handleLogout = useCallback(() => {
+    localForage
+      .removeItem('authToken')
+      .then(() => {
+        alert('Logged out successfully');
+        setIsLoggedIn(false);
+      })
+      .catch((error) => {
+        alert('Logout error:' + error);
+      });
+  }, []);
+
   const renderPosts = useCallback(() => {
     const filteredPosts = memoizedPosts.filter(
       (post) => getThreadTitle(post.thread) === thread.title,
@@ -110,10 +123,24 @@ const ThreadPage: React.FC<{
         <Navbar.Brand href="/">Bulletin Board System</Navbar.Brand>
         <Navbar.Toggle aria-controls="navbar-nav" />
         <Navbar.Collapse id="navbar-nav">
-          <Navbar.Collapse className="justify-content-end">
-            <Button variant="primary">Log in</Button>
-            <Button variant="primary">Register</Button>
-          </Navbar.Collapse>
+          {isLoggedIn ? (
+            <Navbar.Collapse className="justify-content-end">
+              <Link to="/">
+                <Button variant="primary" onClick={handleLogout}>
+                  Log out
+                </Button>
+              </Link>
+            </Navbar.Collapse>
+          ) : (
+            <Navbar.Collapse className="justify-content-end">
+              <Link to="/login">
+                <Button variant="primary">Log in</Button>
+              </Link>
+              <Link to="/register">
+                <Button variant="primary">Register</Button>
+              </Link>
+            </Navbar.Collapse>
+          )}
         </Navbar.Collapse>
       </Navbar>
       <div className="thread-index-page">
