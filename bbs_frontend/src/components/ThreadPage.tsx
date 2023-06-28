@@ -14,7 +14,6 @@ import {
 import {
   useGetPosts,
   useGetBoardName,
-  useGetThreadTitle,
   useGetUsername,
   convertToHumanizedTimestamp,
 } from './utils';
@@ -32,7 +31,6 @@ const ThreadPage: React.FC<{
   const rootStore = useStore();
   const posts = useGetPosts();
   const getBoardName = useGetBoardName();
-  const getThreadTitle = useGetThreadTitle();
   const getUsername = useGetUsername();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [formData, setFormData] = useState({
@@ -71,8 +69,13 @@ const ThreadPage: React.FC<{
         }
       };
       postReply(formData);
+      setFormData({
+        thread: thread.id,
+        message: '',
+        createdBy: 0,
+      });
     },
-    [formData, rootStore.posts],
+    [formData, rootStore.posts, thread.id],
   );
 
   const handleLogout = useCallback(() => {
@@ -88,11 +91,14 @@ const ThreadPage: React.FC<{
   }, []);
 
   const renderPosts = useCallback(() => {
-    const filteredPosts = posts.filter(
-      (post) => getThreadTitle(post.thread) === thread.title,
+    const filteredPosts = posts.filter((post) => post.thread === thread.id);
+
+    const sortedPosts = filteredPosts.sort(
+      (a, b) =>
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
     );
 
-    return filteredPosts.map((post) => (
+    return sortedPosts.map((post) => (
       <ListGroup.Item key={post.id}>
         <div className="d-flex justify-content-between align-items-center">
           <Link to={`/user_${post.createdBy}`}>
@@ -105,7 +111,7 @@ const ThreadPage: React.FC<{
         <div className="mt-2">{post.message}</div>
       </ListGroup.Item>
     ));
-  }, [getThreadTitle, getUsername, posts, thread.title]);
+  }, [getUsername, posts, thread.id]);
 
   return (
     <div>

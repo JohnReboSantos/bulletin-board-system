@@ -5,7 +5,6 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '../stores/RootStore';
 import {
   useGetThreads,
-  useGetBoardName,
   useIsPoster,
   useIsAdminOrMod,
   useGetPosts,
@@ -35,7 +34,6 @@ const BoardPage: React.FC<{
   const threads = useGetThreads();
   const isAdminOrMod = useIsAdminOrMod();
   const isPoster = useIsPoster();
-  const getBoardName = useGetBoardName();
   const getUsername = useGetUsername();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [formData, setFormData] = useState({
@@ -131,9 +129,43 @@ const BoardPage: React.FC<{
 
   const renderThreads = useCallback(() => {
     const filteredThreads = threads.filter(
-      (thread) => getBoardName(thread.board) === board.name,
+      (thread) => thread.board === board.id,
     );
-    return filteredThreads.map((thread) => (
+    const threadsWithPosts = filteredThreads.filter((thread) =>
+      posts.some((post) => post.thread === thread.id),
+    );
+    const threadsWithoutPosts = filteredThreads.filter(
+      (thread) => !posts.some((post) => post.thread === thread.id),
+    );
+    const sortedThreadsWithPosts = threadsWithPosts.sort((a, b) => {
+      const postsA = posts.filter((post) => post.thread === a.id);
+      const postsB = posts.filter((post) => post.thread === b.id);
+      const sortedPostsA = postsA.sort(
+        (post1, post2) =>
+          new Date(post2.createdAt).getTime() -
+          new Date(post1.createdAt).getTime(),
+      );
+      const sortedPostsB = postsB.sort(
+        (post1, post2) =>
+          new Date(post2.createdAt).getTime() -
+          new Date(post1.createdAt).getTime(),
+      );
+      const mostRecentPostA = sortedPostsA[0];
+      const mostRecentPostB = sortedPostsB[0];
+      return (
+        new Date(mostRecentPostA.createdAt).getTime() -
+        new Date(mostRecentPostB.createdAt).getTime()
+      );
+    });
+    const sortedThreadsWithoutPosts = threadsWithoutPosts.sort(
+      (a, b) =>
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+    );
+    const sortedThreads = [
+      ...sortedThreadsWithPosts,
+      ...sortedThreadsWithoutPosts,
+    ];
+    return sortedThreads.map((thread) => (
       <ListGroup.Item key={thread.id}>
         <div className="d-flex justify-content-between align-items-center">
           <Link to={`/board_${board.name}/thread_${thread.title}`}>
@@ -157,11 +189,12 @@ const BoardPage: React.FC<{
       </ListGroup.Item>
     ));
   }, [
+    board.id,
     board.name,
-    getBoardName,
     getLastReply,
     handleLockThread,
     isAdminOrMod,
+    posts,
     rootStore.user.user.id,
     threads,
   ]);
