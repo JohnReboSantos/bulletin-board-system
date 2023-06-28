@@ -7,6 +7,7 @@ interface Thread {
   createdBy: number;
   createdAt: string;
   locked: boolean;
+  sticky: boolean;
 }
 
 @model('ThreadStore')
@@ -28,6 +29,7 @@ export class ThreadStore extends Model({
           created_by: number;
           created_at: string;
           locked: boolean;
+          sticky: boolean;
         }) => ({
           id: thread.id,
           title: thread.title,
@@ -35,6 +37,7 @@ export class ThreadStore extends Model({
           createdBy: thread.created_by,
           createdAt: thread.created_at,
           locked: thread.locked,
+          sticky: thread.sticky,
         }),
       );
       this.threads = updatedData;
@@ -78,11 +81,18 @@ export class ThreadStore extends Model({
   });
 
   @modelFlow
-  patchThread = _async(function* (threadId: number) {
+  patchThread = _async(function* (
+    threadId: number,
+    threadLocked: boolean,
+    threadSticky: boolean,
+  ) {
     try {
       const response = yield* _await(
         fetch(`${process.env.REACT_APP_BASE_API_URL}/threads/${threadId}/`, {
-          body: JSON.stringify({ locked: true }),
+          body: JSON.stringify({
+            locked: threadLocked,
+            sticky: threadSticky,
+          }),
           headers: {
             'Content-Type': 'application/json',
           },

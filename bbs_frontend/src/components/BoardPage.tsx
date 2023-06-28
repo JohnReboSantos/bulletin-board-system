@@ -76,10 +76,14 @@ const BoardPage: React.FC<{
     [getUsername, posts],
   );
 
-  const handleLockThread = useCallback(
-    async (threadId: number) => {
+  const handleUpdateThread = useCallback(
+    async (threadId: number, threadLocked: boolean, threadSticky: boolean) => {
       try {
-        await rootStore.threads.patchThread(threadId);
+        await rootStore.threads.patchThread(
+          threadId,
+          threadLocked,
+          threadSticky,
+        );
         await rootStore.threads.getThreads();
       } catch (error) {
         console.error('Error locking thread:', error);
@@ -173,6 +177,8 @@ const BoardPage: React.FC<{
           </Link>
           <div>
             {thread.locked && <span className="text-danger">Locked</span>}
+            <br />
+            {thread.sticky && <span className="text-danger">Sticky</span>}
           </div>
         </div>
         <div className="mt-2">
@@ -181,9 +187,33 @@ const BoardPage: React.FC<{
         {!thread.locked && isAdminOrMod(rootStore.user.user.id) && (
           <Button
             variant="secondary"
-            onClick={() => handleLockThread(thread.id)}
+            onClick={() => handleUpdateThread(thread.id, true, thread.sticky)}
           >
-            Lock thread
+            Lock
+          </Button>
+        )}
+        {thread.locked && isAdminOrMod(rootStore.user.user.id) && (
+          <Button
+            variant="secondary"
+            onClick={() => handleUpdateThread(thread.id, false, thread.sticky)}
+          >
+            Unlock
+          </Button>
+        )}
+        {!thread.sticky && isAdminOrMod(rootStore.user.user.id) && (
+          <Button
+            variant="secondary"
+            onClick={() => handleUpdateThread(thread.id, thread.locked, true)}
+          >
+            Stickify
+          </Button>
+        )}
+        {thread.sticky && isAdminOrMod(rootStore.user.user.id) && (
+          <Button
+            variant="secondary"
+            onClick={() => handleUpdateThread(thread.id, thread.locked, false)}
+          >
+            Unstickify
           </Button>
         )}
       </ListGroup.Item>
@@ -192,7 +222,7 @@ const BoardPage: React.FC<{
     board.id,
     board.name,
     getLastReply,
-    handleLockThread,
+    handleUpdateThread,
     isAdminOrMod,
     posts,
     rootStore.user.user.id,

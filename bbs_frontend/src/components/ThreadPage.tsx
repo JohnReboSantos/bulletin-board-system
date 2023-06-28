@@ -26,6 +26,7 @@ const ThreadPage: React.FC<{
     createdBy: number;
     createdAt: string;
     locked: boolean;
+    sticky: boolean;
   };
 }> = ({ thread }) => {
   const rootStore = useStore();
