@@ -70,6 +70,29 @@ export const useGetBoards = () => {
   return memoizedBoards;
 };
 
+export const useGetUsers = () => {
+  const rootStore = useStore();
+
+  const getUsers = useCallback(async () => {
+    try {
+      await rootStore.users.getUsers();
+    } catch (error) {
+      console.error('Error getting users:', error);
+    }
+  }, [rootStore.users]);
+
+  useEffect(() => {
+    getUsers();
+  }, [getUsers]);
+
+  const memoizedUsers = useMemo(
+    () => rootStore.users.users,
+    [rootStore.users.users],
+  );
+
+  return memoizedUsers;
+};
+
 export const useGetThreadTitle = () => {
   const rootStore = useStore();
 
@@ -104,19 +127,14 @@ export const useGetBoardName = () => {
 };
 
 export const useGetUsername = () => {
-  const rootStore = useStore();
-
-  const memoizedUsers = useMemo(
-    () => rootStore.users.users,
-    [rootStore.users.users],
-  );
+  const users = useGetUsers();
 
   const getUsername = useCallback(
     (userId: number) => {
-      const user = memoizedUsers.find((user) => user.id === userId);
+      const user = users.find((user) => user.id === userId);
       return user ? user.username : '';
     },
-    [memoizedUsers],
+    [users],
   );
 
   return getUsername;

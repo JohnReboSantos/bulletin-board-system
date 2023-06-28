@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import localForage from 'localforage';
 import {
@@ -12,29 +12,29 @@ import {
 import { useIsAdminOrMod } from './utils';
 import { useStore } from '../stores/RootStore';
 import { Link } from 'react-router-dom';
+import { useGetPosts } from './utils';
 
-interface User {
-  id: number;
-  username: string;
-  email: string;
-  aboutMyself: string;
-  dateOfBirth: string;
-  hometown: string;
-  presentLocation: string;
-  website: string;
-  gender: string;
-  interests: string;
-}
-
-interface ProfilePageProps {
-  user: User;
-}
-
-const ProfilePage = ({ user }: ProfilePageProps) => {
+const ProfilePage = ({
+  user,
+}: {
+  user: {
+    id: number;
+    username: string;
+    email: string;
+    aboutMyself: string;
+    dateOfBirth: string;
+    hometown: string;
+    presentLocation: string;
+    website: string;
+    gender: string;
+    interests: string;
+  };
+}) => {
   const rootStore = useStore();
+  const posts = useGetPosts();
+  const isAdminOrMod = useIsAdminOrMod();
   const [isCurrentUser, setIsCurrentUser] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const isAdminOrMod = useIsAdminOrMod();
 
   const getUser = useCallback(async () => {
     try {
@@ -53,23 +53,6 @@ const ProfilePage = ({ user }: ProfilePageProps) => {
     getUser();
   }, [getUser]);
 
-  const getPosts = useCallback(async () => {
-    try {
-      await rootStore.posts.getPosts();
-    } catch (error) {
-      console.error('Error getting posts:', error);
-    }
-  }, [rootStore.posts]);
-
-  useEffect(() => {
-    getPosts();
-  }, [getPosts]);
-
-  const memoizedPosts = useMemo(
-    () => rootStore.posts.posts,
-    [rootStore.posts.posts],
-  );
-
   const handleLogout = useCallback(() => {
     localForage
       .removeItem('authToken')
@@ -83,9 +66,7 @@ const ProfilePage = ({ user }: ProfilePageProps) => {
   }, []);
 
   const renderPosts = useCallback(() => {
-    const filteredPosts = memoizedPosts.filter(
-      (post) => post.createdBy === user.id,
-    );
+    const filteredPosts = posts.filter((post) => post.createdBy === user.id);
     return filteredPosts.map((post) => (
       <ListGroup.Item key={post.id}>
         <div>{post.message}</div>
@@ -94,7 +75,7 @@ const ProfilePage = ({ user }: ProfilePageProps) => {
         </div>
       </ListGroup.Item>
     ));
-  }, [memoizedPosts, user.id]);
+  }, [posts, user.id]);
 
   return (
     <div>

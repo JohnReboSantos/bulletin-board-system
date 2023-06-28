@@ -1,9 +1,14 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import localForage from 'localforage';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../stores/RootStore';
-import { useGetBoardName, useIsPoster, useIsAdminOrMod } from './utils';
+import {
+  useGetThreads,
+  useGetBoardName,
+  useIsPoster,
+  useIsAdminOrMod,
+} from './utils';
 import {
   Card,
   ListGroup,
@@ -23,6 +28,7 @@ const BoardPage: React.FC<{
   };
 }> = ({ board }) => {
   const rootStore = useStore();
+  const threads = useGetThreads();
   const isAdminOrMod = useIsAdminOrMod();
   const isPoster = useIsPoster();
   const getBoardName = useGetBoardName();
@@ -47,11 +53,6 @@ const BoardPage: React.FC<{
   useEffect(() => {
     getUser();
   }, [getUser]);
-
-  const memoizedThreads = useMemo(
-    () => rootStore.threads.threads,
-    [rootStore.threads.threads],
-  );
 
   const handleLockThread = useCallback(
     async (threadId: number) => {
@@ -105,7 +106,7 @@ const BoardPage: React.FC<{
   }, []);
 
   const renderThreads = useCallback(() => {
-    const filteredThreads = memoizedThreads.filter(
+    const filteredThreads = threads.filter(
       (thread) => getBoardName(thread.board) === board.name,
     );
     return filteredThreads.map((thread) => (
@@ -138,8 +139,8 @@ const BoardPage: React.FC<{
     getBoardName,
     handleLockThread,
     isAdminOrMod,
-    memoizedThreads,
     rootStore.user.user.id,
+    threads,
   ]);
 
   return (

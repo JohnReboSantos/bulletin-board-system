@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useMemo, useState } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../stores/RootStore';
@@ -11,7 +11,12 @@ import {
   Button,
   Navbar,
 } from 'react-bootstrap';
-import { useGetBoardName, useGetThreadTitle, useGetUsername } from './utils';
+import {
+  useGetPosts,
+  useGetBoardName,
+  useGetThreadTitle,
+  useGetUsername,
+} from './utils';
 
 const ThreadPage: React.FC<{
   thread: {
@@ -24,15 +29,16 @@ const ThreadPage: React.FC<{
   };
 }> = ({ thread }) => {
   const rootStore = useStore();
+  const posts = useGetPosts();
+  const getBoardName = useGetBoardName();
+  const getThreadTitle = useGetThreadTitle();
+  const getUsername = useGetUsername();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [formData, setFormData] = useState({
     thread: thread.id,
     message: '',
     createdBy: 0,
   });
-  const getBoardName = useGetBoardName();
-  const getThreadTitle = useGetThreadTitle();
-  const getUsername = useGetUsername();
 
   const getUser = useCallback(async () => {
     try {
@@ -47,18 +53,6 @@ const ThreadPage: React.FC<{
   useEffect(() => {
     getUser();
   }, [getUser]);
-
-  const getPosts = useCallback(async () => {
-    try {
-      await rootStore.posts.getPosts();
-    } catch (error) {
-      console.error('Error getting posts:', error);
-    }
-  }, [rootStore.posts]);
-
-  useEffect(() => {
-    getPosts();
-  }, [getPosts]);
 
   const handlePostReply = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
@@ -80,11 +74,6 @@ const ThreadPage: React.FC<{
     [formData, rootStore.posts],
   );
 
-  const memoizedPosts = useMemo(
-    () => rootStore.posts.posts,
-    [rootStore.posts.posts],
-  );
-
   const handleLogout = useCallback(() => {
     localForage
       .removeItem('authToken')
@@ -98,7 +87,7 @@ const ThreadPage: React.FC<{
   }, []);
 
   const renderPosts = useCallback(() => {
-    const filteredPosts = memoizedPosts.filter(
+    const filteredPosts = posts.filter(
       (post) => getThreadTitle(post.thread) === thread.title,
     );
 
@@ -115,7 +104,7 @@ const ThreadPage: React.FC<{
         <div className="mt-2">{post.message}</div>
       </ListGroup.Item>
     ));
-  }, [getThreadTitle, getUsername, memoizedPosts, thread.title]);
+  }, [getThreadTitle, getUsername, posts, thread.title]);
 
   return (
     <div>
