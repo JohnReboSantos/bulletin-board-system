@@ -23,7 +23,7 @@ class BoardSerializer(serializers.ModelSerializer):
 class ThreadSerializer(serializers.ModelSerializer):
     class Meta:
         model = Thread
-        fields = ('id', 'title', 'board', 'created_by', 'created_at', 'locked')
+        fields = ('id', 'title', 'board', 'created_by', 'created_at', 'locked', 'sticky')
     
     def validate(self, attrs):
         board = attrs.get('board')
