@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import localForage from 'localforage';
 import { observer } from 'mobx-react-lite';
@@ -37,7 +37,7 @@ const BoardPage: React.FC<{
   const isPoster = useIsPoster();
   const getUsername = useGetUsername();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  // const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const [formData, setFormData] = useState({
     title: '',
     board: board.id,
@@ -133,6 +133,15 @@ const BoardPage: React.FC<{
       });
   }, []);
 
+  const threadsPerPage = 20;
+  const totalPages = useMemo(() => {
+    const filteredThreads = threads.filter(
+      (thread) => thread.board === board.id,
+    );
+    const pages = Math.ceil(filteredThreads.length / threadsPerPage);
+    return pages;
+  }, [board.id, threads]);
+
   const renderThreads = useCallback(() => {
     const stickyThreads = threads.filter(
       (thread) => thread.board === board.id && thread.sticky,
@@ -143,7 +152,13 @@ const BoardPage: React.FC<{
     const sortedStickyThreads = getSortedThreads(stickyThreads, posts);
     const sortedNonStickyThreads = getSortedThreads(nonStickyThreads, posts);
     const sortedThreads = [...sortedStickyThreads, ...sortedNonStickyThreads];
-    return sortedThreads.map((thread) => (
+    const indexOfLastPost = currentPage * threadsPerPage;
+    const indexOfFirstPost = indexOfLastPost - threadsPerPage;
+    const currentThreads = sortedThreads.slice(
+      indexOfFirstPost,
+      indexOfLastPost,
+    );
+    return currentThreads.map((thread) => (
       <ListGroup.Item key={thread.id}>
         <div className="d-flex justify-content-between align-items-center">
           <Link to={`/board_${board.name}/thread_${thread.title}`}>
@@ -195,6 +210,7 @@ const BoardPage: React.FC<{
   }, [
     board.id,
     board.name,
+    currentPage,
     getLastReply,
     handleUpdateThread,
     isAdminOrMod,
@@ -233,6 +249,19 @@ const BoardPage: React.FC<{
         <h2>{board.name}</h2>
         <Card>
           <ListGroup variant="flush">{renderThreads()}</ListGroup>
+          <Pagination className="mt-3">
+            {Array.from({ length: totalPages }, (_, index) => index + 1).map(
+              (pageNumber) => (
+                <Pagination.Item
+                  key={pageNumber}
+                  active={pageNumber === currentPage}
+                  onClick={() => setCurrentPage(pageNumber)}
+                >
+                  {pageNumber}
+                </Pagination.Item>
+              ),
+            )}
+          </Pagination>
         </Card>
         {isPoster(rootStore.user.user.id) && (
           <div className="createthread-form">
@@ -258,16 +287,6 @@ const BoardPage: React.FC<{
             </Form>
           </div>
         )}
-        <Pagination className="mt-3">
-          <Pagination.First />
-          <Pagination.Prev />
-          <Pagination.Item active>{1}</Pagination.Item>
-          <Pagination.Item>{2}</Pagination.Item>
-          <Pagination.Item>{3}</Pagination.Item>
-          <Pagination.Ellipsis />
-          <Pagination.Next />
-          <Pagination.Last />
-        </Pagination>
       </div>
     </div>
   );
