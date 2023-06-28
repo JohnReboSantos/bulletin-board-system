@@ -1,5 +1,11 @@
 import { useCallback, useEffect, useMemo } from 'react';
 import { useStore } from '../stores/RootStore';
+import { formatDistanceToNow, parseISO } from 'date-fns';
+
+export const convertToHumanizedTimestamp = (dateString: string) => {
+  const date = parseISO(dateString);
+  return formatDistanceToNow(date, { addSuffix: true });
+};
 
 export const useGetPosts = () => {
   const rootStore = useStore();

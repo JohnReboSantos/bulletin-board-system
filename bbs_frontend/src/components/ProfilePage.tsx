@@ -9,7 +9,7 @@ import {
   Form,
   Navbar,
 } from 'react-bootstrap';
-import { useIsAdminOrMod } from './utils';
+import { convertToHumanizedTimestamp, useIsAdminOrMod } from './utils';
 import { useStore } from '../stores/RootStore';
 import { Link } from 'react-router-dom';
 import { useGetPosts } from './utils';
@@ -71,7 +71,7 @@ const ProfilePage = ({
       <ListGroup.Item key={post.id}>
         <div>{post.message}</div>
         <div>
-          <small>{post.createdAt}</small>
+          <small>{convertToHumanizedTimestamp(post.createdAt)}</small>
         </div>
       </ListGroup.Item>
     ));

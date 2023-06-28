@@ -10,6 +10,7 @@ import {
   useIsAdminOrMod,
   useGetPosts,
   useGetUsername,
+  convertToHumanizedTimestamp,
 } from './utils';
 import {
   Card,
@@ -67,9 +68,9 @@ const BoardPage: React.FC<{
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
         );
         const latestPost = sortedPosts[0];
-        const lastReplyDate = latestPost.createdAt;
+        const lastReplyDate = convertToHumanizedTimestamp(latestPost.createdAt);
         const lastReplyName = getUsername(latestPost.createdBy);
-        return `Last reply by ${lastReplyName} at ${lastReplyDate}`;
+        return `Last reply by ${lastReplyName} ${lastReplyDate}`;
       } else {
         return 'No replies';
       }

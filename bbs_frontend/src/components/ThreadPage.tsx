@@ -16,6 +16,7 @@ import {
   useGetBoardName,
   useGetThreadTitle,
   useGetUsername,
+  convertToHumanizedTimestamp,
 } from './utils';
 
 const ThreadPage: React.FC<{
@@ -98,7 +99,7 @@ const ThreadPage: React.FC<{
             <div>{getUsername(post.createdBy)}</div>
           </Link>
           <div>
-            <small>{post.createdAt}</small>
+            <small>{convertToHumanizedTimestamp(post.createdAt)}</small>
           </div>
         </div>
         <div className="mt-2">{post.message}</div>
