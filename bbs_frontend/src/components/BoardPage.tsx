@@ -10,6 +10,7 @@ import {
   useGetPosts,
   useGetUsername,
   convertToHumanizedTimestamp,
+  getSortedThreads,
 } from './utils';
 import {
   Card,
@@ -132,43 +133,15 @@ const BoardPage: React.FC<{
   }, []);
 
   const renderThreads = useCallback(() => {
-    const filteredThreads = threads.filter(
-      (thread) => thread.board === board.id,
+    const stickyThreads = threads.filter(
+      (thread) => thread.board === board.id && thread.sticky,
     );
-    const threadsWithPosts = filteredThreads.filter((thread) =>
-      posts.some((post) => post.thread === thread.id),
+    const nonStickyThreads = threads.filter(
+      (thread) => thread.board === board.id && !thread.sticky,
     );
-    const threadsWithoutPosts = filteredThreads.filter(
-      (thread) => !posts.some((post) => post.thread === thread.id),
-    );
-    const sortedThreadsWithPosts = threadsWithPosts.sort((a, b) => {
-      const postsA = posts.filter((post) => post.thread === a.id);
-      const postsB = posts.filter((post) => post.thread === b.id);
-      const sortedPostsA = postsA.sort(
-        (post1, post2) =>
-          new Date(post2.createdAt).getTime() -
-          new Date(post1.createdAt).getTime(),
-      );
-      const sortedPostsB = postsB.sort(
-        (post1, post2) =>
-          new Date(post2.createdAt).getTime() -
-          new Date(post1.createdAt).getTime(),
-      );
-      const mostRecentPostA = sortedPostsA[0];
-      const mostRecentPostB = sortedPostsB[0];
-      return (
-        new Date(mostRecentPostA.createdAt).getTime() -
-        new Date(mostRecentPostB.createdAt).getTime()
-      );
-    });
-    const sortedThreadsWithoutPosts = threadsWithoutPosts.sort(
-      (a, b) =>
-        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-    );
-    const sortedThreads = [
-      ...sortedThreadsWithPosts,
-      ...sortedThreadsWithoutPosts,
-    ];
+    const sortedStickyThreads = getSortedThreads(stickyThreads, posts);
+    const sortedNonStickyThreads = getSortedThreads(nonStickyThreads, posts);
+    const sortedThreads = [...sortedStickyThreads, ...sortedNonStickyThreads];
     return sortedThreads.map((thread) => (
       <ListGroup.Item key={thread.id}>
         <div className="d-flex justify-content-between align-items-center">
