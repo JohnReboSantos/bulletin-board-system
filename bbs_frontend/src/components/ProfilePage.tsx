@@ -67,6 +67,10 @@ const ProfilePage = ({
 
   const renderPosts = useCallback(() => {
     const filteredPosts = posts.filter((post) => post.createdBy === user.id);
+    const sortedPosts = filteredPosts.sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
     return filteredPosts.map((post) => (
       <ListGroup.Item key={post.id}>
         <div>{post.message}</div>
