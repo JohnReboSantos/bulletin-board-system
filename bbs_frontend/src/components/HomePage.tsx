@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import localForage from 'localforage';
 import { observer } from 'mobx-react-lite';
@@ -28,7 +28,7 @@ const HomePage: React.FC<{
   const rootStore = useStore();
   const posts = useGetPosts();
   const threads = useGetThreads();
-  const IsAdmin = useIsAdmin();
+  const isAdmin = useIsAdmin();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -49,6 +49,8 @@ const HomePage: React.FC<{
   useEffect(() => {
     getUser();
   }, [getUser]);
+
+  const currentUser = useMemo(() => rootStore.user.user, [rootStore.user.user]);
 
   const getNumberOfThreads = useCallback(
     (boardId: number) =>
@@ -104,6 +106,7 @@ const HomePage: React.FC<{
       .then(() => {
         alert('Logged out successfully');
         setIsLoggedIn(false);
+        window.location.reload();
       })
       .catch((error) => {
         alert('Logout error:' + error);
@@ -131,6 +134,20 @@ const HomePage: React.FC<{
     ),
     [getNumberOfPosts, getNumberOfThreads],
   );
+
+  const groupedBoards = useMemo(() => {
+    const grouped: {
+      [topic: string]: typeof boards;
+    } = {};
+
+    boards.forEach((board) => {
+      if (!grouped[board.topic]) {
+        grouped[board.topic] = [];
+      }
+      grouped[board.topic].push(board);
+    });
+    return grouped;
+  }, [boards]);
 
   return (
     <div>
@@ -160,35 +177,61 @@ const HomePage: React.FC<{
       </Navbar>
 
       <div className="board-list">
-        {boards.map((board) => (
-          <div key={board.id}>
-            <OverlayTrigger
-              key={board.id}
-              placement="bottom"
-              overlay={renderTooltip(board)}
-            >
-              <Card style={{ width: '18rem', margin: '10px' }}>
-                <Card.Body>
-                  <Link to={`/board_${board.name}`}>
-                    <Card.Title>{board.name}</Card.Title>
-                  </Link>
-                  <Card.Subtitle className="mb-2 text-muted">
-                    {board.topic}
-                  </Card.Subtitle>
-                </Card.Body>
-              </Card>
-            </OverlayTrigger>
-            {IsAdmin(rootStore.user.user.id) && (
-              <Button
-                variant="secondary"
-                onClick={() => handleRemoveBoard(board.id)}
+        {isAdmin(currentUser.id) &&
+          Object.entries(groupedBoards).map(([topic, boards]) => (
+            <div key={topic}>
+              <h3>{topic}</h3>
+              {boards.map((board) => (
+                <div key={board.id}>
+                  <OverlayTrigger
+                    key={board.id}
+                    placement="bottom"
+                    overlay={renderTooltip(board)}
+                  >
+                    <Card style={{ width: '18rem', margin: '10px' }}>
+                      <Card.Body>
+                        <Link to={`/board_${board.name}`}>
+                          <Card.Title>{board.name}</Card.Title>
+                        </Link>
+                        <Card.Subtitle className="mb-2 text-muted">
+                          {board.topic}
+                        </Card.Subtitle>
+                      </Card.Body>
+                    </Card>
+                  </OverlayTrigger>
+
+                  <Button
+                    variant="secondary"
+                    onClick={() => handleRemoveBoard(board.id)}
+                  >
+                    Remove board
+                  </Button>
+                </div>
+              ))}
+            </div>
+          ))}
+        {!isAdmin(currentUser.id) &&
+          boards.map((board) => (
+            <div key={board.id}>
+              <OverlayTrigger
+                key={board.id}
+                placement="bottom"
+                overlay={renderTooltip(board)}
               >
-                Remove board
-              </Button>
-            )}
-          </div>
-        ))}
-        {IsAdmin(rootStore.user.user.id) && (
+                <Card style={{ width: '18rem', margin: '10px' }}>
+                  <Card.Body>
+                    <Link to={`/board_${board.name}`}>
+                      <Card.Title>{board.name}</Card.Title>
+                    </Link>
+                    <Card.Subtitle className="mb-2 text-muted">
+                      {board.topic}
+                    </Card.Subtitle>
+                  </Card.Body>
+                </Card>
+              </OverlayTrigger>
+            </div>
+          ))}
+        {isAdmin(currentUser.id) && (
           <div className="createboard-form">
             <Form onSubmit={handleCreateBoard}>
               <Form.Group controlId="formBoardName">
