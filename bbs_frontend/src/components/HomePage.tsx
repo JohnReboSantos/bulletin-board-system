@@ -51,27 +51,16 @@ const HomePage: React.FC<{
   }, [getUser]);
 
   const getNumberOfThreads = useCallback(
-    (board: {
-      id: number;
-      name: string;
-      topic: string;
-      description: string;
-      createdAt: string;
-    }) => threads.filter((thread) => thread.board === board.id).length,
+    (boardId: number) =>
+      threads.filter((thread) => thread.board === boardId).length,
     [threads],
   );
 
   const getNumberOfPosts = useCallback(
-    (board: {
-      id: number;
-      name: string;
-      topic: string;
-      description: string;
-      createdAt: string;
-    }) =>
+    (boardId: number) =>
       posts.filter((post) =>
         threads.some(
-          (thread) => thread.board === board.id && post.thread === thread.id,
+          (thread) => thread.board === boardId && post.thread === thread.id,
         ),
       ).length,
     [posts, threads],
@@ -133,8 +122,10 @@ const HomePage: React.FC<{
         <Card.Title>{board.name}</Card.Title>
         <Card.Text>{board.description}</Card.Text>
         <ListGroup>
-          <ListGroup.Item>Threads: {getNumberOfThreads(board)}</ListGroup.Item>{' '}
-          <ListGroup.Item>Posts: {getNumberOfPosts(board)}</ListGroup.Item>{' '}
+          <ListGroup.Item>
+            Threads: {getNumberOfThreads(board.id)}
+          </ListGroup.Item>{' '}
+          <ListGroup.Item>Posts: {getNumberOfPosts(board.id)}</ListGroup.Item>{' '}
         </ListGroup>
       </Tooltip>
     ),

@@ -8,6 +8,8 @@ import {
   useGetBoardName,
   useIsPoster,
   useIsAdminOrMod,
+  useGetPosts,
+  useGetUsername,
 } from './utils';
 import {
   Card,
@@ -28,10 +30,12 @@ const BoardPage: React.FC<{
   };
 }> = ({ board }) => {
   const rootStore = useStore();
+  const posts = useGetPosts();
   const threads = useGetThreads();
   const isAdminOrMod = useIsAdminOrMod();
   const isPoster = useIsPoster();
   const getBoardName = useGetBoardName();
+  const getUsername = useGetUsername();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
@@ -53,6 +57,25 @@ const BoardPage: React.FC<{
   useEffect(() => {
     getUser();
   }, [getUser]);
+
+  const getLastReply = useCallback(
+    (threadId: number) => {
+      const filteredPosts = posts.filter((post) => post.thread === threadId);
+      if (filteredPosts.length > 0) {
+        const sortedPosts = filteredPosts.sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+        );
+        const latestPost = sortedPosts[0];
+        const lastReplyDate = latestPost.createdAt;
+        const lastReplyName = getUsername(latestPost.createdBy);
+        return `Last reply by ${lastReplyName} at ${lastReplyDate}`;
+      } else {
+        return 'No replies';
+      }
+    },
+    [getUsername, posts],
+  );
 
   const handleLockThread = useCallback(
     async (threadId: number) => {
@@ -120,9 +143,7 @@ const BoardPage: React.FC<{
           </div>
         </div>
         <div className="mt-2">
-          <small>
-            Last reply: {/* last reply */} by {/* last replier name*/}
-          </small>
+          <small>{getLastReply(thread.id)}</small>
         </div>
         {!thread.locked && isAdminOrMod(rootStore.user.user.id) && (
           <Button
@@ -137,6 +158,7 @@ const BoardPage: React.FC<{
   }, [
     board.name,
     getBoardName,
+    getLastReply,
     handleLockThread,
     isAdminOrMod,
     rootStore.user.user.id,
