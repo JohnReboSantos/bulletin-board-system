@@ -7,12 +7,13 @@ from django.db import models
 
 
 class CustomUserManager(BaseUserManager):
-    def create_user(self, email, username, about_myself, date_of_birth, hometown, present_location, website=None, gender=None, interests=None, password=None):
+    def create_user(self, avatar, email, username, about_myself, date_of_birth, hometown, present_location, website=None, gender=None, interests=None, password=None):
         if not email:
             raise ValueError("The Email field must be set")
         email = self.normalize_email(email)
 
         user = self.model(
+            avatar=avatar,
             email=email,
             username=username,
             about_myself=about_myself,
@@ -29,7 +30,7 @@ class CustomUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, username, about_myself, date_of_birth, hometown, present_location, website=None, gender=None, interests=None, password=None):
+    def create_superuser(self, avatar, email, username, about_myself, date_of_birth, hometown, present_location, website=None, gender=None, interests=None, password=None):
         user = self.create_user(email, username, about_myself, date_of_birth, hometown, present_location, website, gender, interests, password)
         user.is_staff = True
         user.is_superuser = True
@@ -38,6 +39,7 @@ class CustomUserManager(BaseUserManager):
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
+    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
     email = models.EmailField(unique=True)
     username = models.CharField(max_length=255, unique=True)
     about_myself = models.TextField()
@@ -54,7 +56,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = "email"
 
-    REQUIRED_FIELDS = ["username", "about_myself", "date_of_birth", "hometown", "present_location", "website", "gender", "interests"]
+    REQUIRED_FIELDS = ["avatar", "username", "about_myself", "date_of_birth", "hometown", "present_location", "website", "gender", "interests"]
 
     def __str__(self):
         return self.email

@@ -40,6 +40,7 @@ class RegisterAPIView(APIView):
         data = request.data
 
         if isinstance(data, str):  # Handling 'application/x-www-form-urlencoded' format
+            avatar = request.POST.get("avatar")
             username = request.POST.get("username")
             email = request.POST.get("email")
             password1 = request.POST.get("password1")
@@ -52,6 +53,7 @@ class RegisterAPIView(APIView):
             gender = request.POST.get("gender")
             interests = request.POST.get("interests")
         else:  # Assuming JSON format
+            avatar = data.get("avatar")
             username = data.get("username")
             email = data.get("email")
             password1 = data.get("password1")
@@ -66,6 +68,7 @@ class RegisterAPIView(APIView):
 
         serializer = RegisterSerializer(
             data={
+                "avatar": avatar,
                 "username": username,
                 "email": email,
                 "password1": password1,
