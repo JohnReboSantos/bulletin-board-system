@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import localForage from 'localforage';
 import { observer } from 'mobx-react-lite';
@@ -46,6 +46,56 @@ const HomePage: React.FC<{
   useEffect(() => {
     getUser();
   }, [getUser]);
+
+  const getThreadsAndPosts = useCallback(async () => {
+    try {
+      await rootStore.threads.getThreads();
+      await rootStore.posts.getPosts();
+    } catch (error) {
+      console.error('Error getting threads and posts:', error);
+    }
+  }, [rootStore.posts, rootStore.threads]);
+
+  useEffect(() => {
+    getThreadsAndPosts();
+  }, [getThreadsAndPosts]);
+
+  const memoizedThreads = useMemo(
+    () => rootStore.threads.threads,
+    [rootStore.threads.threads],
+  );
+
+  const memoizedPosts = useMemo(
+    () => rootStore.posts.posts,
+    [rootStore.posts.posts],
+  );
+
+  const getNumberOfThreads = useCallback(
+    (board: {
+      id: number;
+      name: string;
+      topic: string;
+      description: string;
+      createdAt: string;
+    }) => memoizedThreads.filter((thread) => thread.board === board.id).length,
+    [memoizedThreads],
+  );
+
+  const getNumberOfPosts = useCallback(
+    (board: {
+      id: number;
+      name: string;
+      topic: string;
+      description: string;
+      createdAt: string;
+    }) =>
+      memoizedPosts.filter((post) =>
+        memoizedThreads.some(
+          (thread) => thread.board === board.id && post.thread === thread.id,
+        ),
+      ).length,
+    [memoizedPosts, memoizedThreads],
+  );
 
   const handleCreateBoard = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
@@ -103,14 +153,12 @@ const HomePage: React.FC<{
         <Card.Title>{board.name}</Card.Title>
         <Card.Text>{board.description}</Card.Text>
         <ListGroup>
-          <ListGroup.Item>
-            Threads: {/* implement no. threads */}
-          </ListGroup.Item>{' '}
-          <ListGroup.Item>Posts: {/* implement no. of posts */}</ListGroup.Item>{' '}
+          <ListGroup.Item>Threads: {getNumberOfThreads(board)}</ListGroup.Item>{' '}
+          <ListGroup.Item>Posts: {getNumberOfPosts(board)}</ListGroup.Item>{' '}
         </ListGroup>
       </Tooltip>
     ),
-    [],
+    [getNumberOfPosts, getNumberOfThreads],
   );
 
   return (
