@@ -118,7 +118,7 @@ export class UserStore extends Model({
     user: { email: string; password: string },
   ) {
     try {
-      const response = yield* _await(
+      const response: any = yield* _await(
         fetch(`${process.env.REACT_APP_BASE_AUTH_URL}/login/`, {
           body: JSON.stringify(user),
           headers: {
@@ -127,7 +127,7 @@ export class UserStore extends Model({
           method: 'POST',
         }),
       );
-      const data = yield* _await(response.json());
+      const data: any = yield* _await(response.json());
       this.key = data['key'];
       localForage.setItem('authToken', this.key);
       if (response.ok) {
@@ -159,6 +159,40 @@ export class UserStore extends Model({
       }
     } catch (error) {
       console.log('Logout error:', error);
+    }
+  });
+
+  @modelFlow
+  patchUser = _async(function* (user: User) {
+    try {
+      const updatedUser = {
+        username: user.username,
+        email: user.email,
+        about_myself: user.aboutMyself,
+        date_of_birth: user.dateOfBirth,
+        hometown: user.hometown,
+        present_location: user.presentLocation,
+        website: user.website,
+        gender: user.gender,
+        interests: user.interests,
+      };
+      const response = yield* _await(
+        fetch(`${process.env.REACT_APP_BASE_API_URL}/users/${user.id}/`, {
+          body: JSON.stringify(updatedUser),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          method: 'PATCH',
+        }),
+      );
+      console.log('JSON.stringify(updatedUser):', JSON.stringify(updatedUser));
+      if (response.ok) {
+        alert('Updated profile successfully');
+      } else {
+        alert('Failed Network Request: ' + response.statusText);
+      }
+    } catch (error) {
+      console.log('PRofile update error:', error);
     }
   });
 }

@@ -1,11 +1,50 @@
+from datetime import datetime, date
 from rest_framework import serializers
+from django.core.exceptions import ValidationError
 from .models import CustomUser, Board, Thread, Post, Administrator, Moderator, Poster
 
 
 class UserSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = CustomUser
         fields = ('id', 'username', 'email', 'about_myself', 'date_of_birth', 'hometown', 'present_location', 'website', 'gender', 'interests')
+    
+    def validate_email(self, value):
+        if self.instance and self.instance.email == value:
+            return value  # Skip validation for the same email
+        if CustomUser.objects.filter(email=value).exists():
+            raise serializers.ValidationError("A user with that email already exists.")
+        return value
+
+    def validate_username(self, value):
+        if self.instance and self.instance.username == value:
+            return value  # Skip validation for the same username
+        if CustomUser.objects.filter(username=value).exists():
+            raise serializers.ValidationError("A user with that username already exists.")
+        return value
+
+    def validate(self, data):
+        username = data.get("username")
+        email = data.get("email")
+        date_of_birth = data.get("date_of_birth")
+
+        # Validate date of birth format (YYYY-MM-DD)
+        try:
+            birth_date = datetime.strptime(
+                str(date_of_birth), "%Y-%m-%d").date()
+        except ValueError:
+            raise serializers.ValidationError(
+                "Invalid date of birth format. Must be YYYY-MM-DD."
+            )
+
+        # Validate birth date is in the past
+        today = date.today()
+        if birth_date > today:
+            raise serializers.ValidationError(
+                "Birth date must be in the past.")
+
+        return data
 
 
 class BoardSerializer(serializers.ModelSerializer):

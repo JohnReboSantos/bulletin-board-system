@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from authentication.models import CustomUser
+from knox.auth import AuthToken
 from .models import Board, Thread, Post, Administrator, Moderator, Poster
 from .serializers import (
     UserSerializer,

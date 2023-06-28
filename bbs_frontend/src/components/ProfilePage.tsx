@@ -35,6 +35,44 @@ const ProfilePage = ({
   const isAdminOrMod = useIsAdminOrMod();
   const [isCurrentUser, setIsCurrentUser] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [formData, setFormData] = useState({
+    id: user.id,
+    username: user.username,
+    email: user.email,
+    aboutMyself: user.aboutMyself,
+    dateOfBirth: user.dateOfBirth,
+    hometown: user.hometown,
+    presentLocation: user.presentLocation,
+    website: user.website,
+    gender: user.gender,
+    interests: user.interests,
+  });
+
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      const updateProfile = async (user: {
+        id: number;
+        username: string;
+        email: string;
+        aboutMyself: string;
+        dateOfBirth: string;
+        hometown: string;
+        presentLocation: string;
+        website: string;
+        gender: string;
+        interests: string;
+      }) => {
+        try {
+          await rootStore.user.patchUser(user);
+        } catch (error) {
+          console.error('Error updating profile:', error);
+        }
+      };
+      updateProfile(formData);
+    },
+    [formData, rootStore.user],
+  );
 
   const getUser = useCallback(async () => {
     try {
@@ -71,7 +109,7 @@ const ProfilePage = ({
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     );
-    return filteredPosts.map((post) => (
+    return sortedPosts.map((post) => (
       <ListGroup.Item key={post.id}>
         <div>{post.message}</div>
         <div>
@@ -114,46 +152,106 @@ const ProfilePage = ({
             <Card.Text>Email: {user.email}</Card.Text>
             {isCurrentUser && (
               <div className="profile-form">
-                <Form>
-                  {/* Profile form fields */}
+                <Form onSubmit={handleSubmit}>
+                  <Form.Group controlId="formUsername">
+                    <Form.Label>Email</Form.Label>
+                    <Form.Control
+                      type="text"
+                      value={formData.email}
+                      onChange={(e) =>
+                        setFormData({ ...formData, email: e.target.value })
+                      }
+                    />
+                  </Form.Group>
                   <Form.Group controlId="formUsername">
                     <Form.Label>Username</Form.Label>
-                    <Form.Control type="text" defaultValue={user.username} />
+                    <Form.Control
+                      type="text"
+                      value={formData.username}
+                      onChange={(e) =>
+                        setFormData({ ...formData, username: e.target.value })
+                      }
+                    />
                   </Form.Group>
                   <Form.Group controlId="formAboutMyself">
                     <Form.Label>About Myself</Form.Label>
                     <Form.Control
                       as="textarea"
                       rows={3}
-                      defaultValue={user.aboutMyself}
+                      value={formData.aboutMyself}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          aboutMyself: e.target.value,
+                        })
+                      }
                     />
                   </Form.Group>
                   <Form.Group controlId="formDateOfBirth">
                     <Form.Label>Date of Birth</Form.Label>
-                    <Form.Control type="date" defaultValue={user.dateOfBirth} />
+                    <Form.Control
+                      type="date"
+                      value={formData.dateOfBirth}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          dateOfBirth: e.target.value,
+                        })
+                      }
+                    />
                   </Form.Group>
                   <Form.Group controlId="formHometown">
                     <Form.Label>Hometown</Form.Label>
-                    <Form.Control type="text" defaultValue={user.hometown} />
+                    <Form.Control
+                      type="text"
+                      value={formData.hometown}
+                      onChange={(e) =>
+                        setFormData({ ...formData, hometown: e.target.value })
+                      }
+                    />
                   </Form.Group>
                   <Form.Group controlId="formPresentLocation">
                     <Form.Label>Present Location</Form.Label>
                     <Form.Control
                       type="text"
-                      defaultValue={user.presentLocation}
+                      value={formData.presentLocation}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          presentLocation: e.target.value,
+                        })
+                      }
                     />
                   </Form.Group>
                   <Form.Group controlId="formWebsite">
                     <Form.Label>Website (Optional)</Form.Label>
-                    <Form.Control type="text" defaultValue={user.website} />
+                    <Form.Control
+                      type="text"
+                      value={formData.website}
+                      onChange={(e) =>
+                        setFormData({ ...formData, website: e.target.value })
+                      }
+                    />
                   </Form.Group>
                   <Form.Group controlId="formGender">
                     <Form.Label>Gender (Optional)</Form.Label>
-                    <Form.Control type="text" defaultValue={user.gender} />
+                    <Form.Control
+                      type="text"
+                      value={formData.gender}
+                      onChange={(e) =>
+                        setFormData({ ...formData, gender: e.target.value })
+                      }
+                    />
                   </Form.Group>
                   <Form.Group controlId="formInterests">
                     <Form.Label>Interests (Optional)</Form.Label>
-                    <Form.Control type="text" defaultValue={user.interests} />
+                    <Form.Control
+                      type="text"
+                      value={formData.interests}
+                      onChange={(e) =>
+                        setFormData({ ...formData, interests: e.target.value })
+                      }
+                    />
                   </Form.Group>
                   <Button variant="primary" type="submit">
                     Update Profile
