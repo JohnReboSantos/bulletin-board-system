@@ -93,6 +93,18 @@ const ProfilePage = ({
     [rootStore.posters],
   );
 
+  const handleUnban = useCallback(
+    async (userId: number) => {
+      try {
+        await rootStore.posters.postPoster(userId);
+        await rootStore.posters.getPosters();
+      } catch (error) {
+        console.error('Error banning user:', error);
+      }
+    },
+    [rootStore.posters],
+  );
+
   const getUser = useCallback(async () => {
     try {
       await rootStore.user.getUser();
@@ -293,6 +305,20 @@ const ProfilePage = ({
                 onClick={() => handleBan(user.id)}
               >
                 Ban User
+              </Button>
+            </div>
+          )}
+        {!isPoster(user.id) &&
+          isAdminOrMod(currentUser.id) &&
+          !IsAdmin(user.id) &&
+          currentUser.id !== user.id && (
+            <div>
+              <Button
+                variant="success"
+                className="mt-3"
+                onClick={() => handleUnban(user.id)}
+              >
+                Unban User
               </Button>
             </div>
           )}
