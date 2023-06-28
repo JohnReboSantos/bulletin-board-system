@@ -256,3 +256,53 @@ export const useIsAdminOrMod = () => {
 
   return isAdminOrMod;
 };
+
+export const getSortedThreads = (
+  filteredThreads: {
+    id: number;
+    title: string;
+    board: number;
+    createdBy: number;
+    createdAt: string;
+    locked: boolean;
+    sticky: boolean;
+  }[],
+  posts: {
+    id: number;
+    thread: number;
+    createdBy: number;
+    createdAt: string;
+    message: string;
+  }[],
+) => {
+  const threadsWithPosts = filteredThreads.filter((thread) =>
+    posts.some((post) => post.thread === thread.id),
+  );
+  const threadsWithoutPosts = filteredThreads.filter(
+    (thread) => !posts.some((post) => post.thread === thread.id),
+  );
+  const sortedThreadsWithPosts = threadsWithPosts.sort((a, b) => {
+    const postsA = posts.filter((post) => post.thread === a.id);
+    const postsB = posts.filter((post) => post.thread === b.id);
+    const sortedPostsA = postsA.sort(
+      (post1, post2) =>
+        new Date(post2.createdAt).getTime() -
+        new Date(post1.createdAt).getTime(),
+    );
+    const sortedPostsB = postsB.sort(
+      (post1, post2) =>
+        new Date(post2.createdAt).getTime() -
+        new Date(post1.createdAt).getTime(),
+    );
+    const mostRecentPostA = sortedPostsA[0];
+    const mostRecentPostB = sortedPostsB[0];
+    return (
+      new Date(mostRecentPostA.createdAt).getTime() -
+      new Date(mostRecentPostB.createdAt).getTime()
+    );
+  });
+  const sortedThreadsWithoutPosts = threadsWithoutPosts.sort(
+    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+  );
+  return [...sortedThreadsWithPosts, ...sortedThreadsWithoutPosts];
+};
