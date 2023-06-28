@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import localForage from 'localforage';
 import {
@@ -9,7 +9,12 @@ import {
   Form,
   Navbar,
 } from 'react-bootstrap';
-import { convertToHumanizedTimestamp, useIsAdminOrMod } from './utils';
+import {
+  convertToHumanizedTimestamp,
+  useIsAdmin,
+  useIsAdminOrMod,
+  useIsPoster,
+} from './utils';
 import { useStore } from '../stores/RootStore';
 import { Link } from 'react-router-dom';
 import { useGetPosts } from './utils';
@@ -32,7 +37,9 @@ const ProfilePage = ({
 }) => {
   const rootStore = useStore();
   const posts = useGetPosts();
+  const IsAdmin = useIsAdmin();
   const isAdminOrMod = useIsAdminOrMod();
+  const isPoster = useIsPoster();
   const [isCurrentUser, setIsCurrentUser] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [formData, setFormData] = useState({
@@ -74,6 +81,18 @@ const ProfilePage = ({
     [formData, rootStore.user],
   );
 
+  const handleBan = useCallback(
+    async (userId: number) => {
+      try {
+        await rootStore.posters.deletePoster(userId);
+        await rootStore.posters.getPosters();
+      } catch (error) {
+        console.error('Error banning user:', error);
+      }
+    },
+    [rootStore.posters],
+  );
+
   const getUser = useCallback(async () => {
     try {
       await rootStore.user.getUser();
@@ -90,6 +109,8 @@ const ProfilePage = ({
   useEffect(() => {
     getUser();
   }, [getUser]);
+
+  const currentUser = useMemo(() => rootStore.user.user, [rootStore.user.user]);
 
   const handleLogout = useCallback(() => {
     localForage
@@ -261,14 +282,17 @@ const ProfilePage = ({
             )}
           </Card.Body>
         </Card>
-        {isAdminOrMod(rootStore.user.user.id) &&
-          rootStore.user.user.id !== user.id && (
+        {isPoster(user.id) &&
+          isAdminOrMod(currentUser.id) &&
+          !IsAdmin(user.id) &&
+          currentUser.id !== user.id && (
             <div>
-              <Button variant="danger" className="mt-3">
+              <Button
+                variant="danger"
+                className="mt-3"
+                onClick={() => handleBan(user.id)}
+              >
                 Ban User
-              </Button>
-              <Button variant="success" className="mt-3">
-                Unban User
               </Button>
             </div>
           )}

@@ -185,7 +185,6 @@ export class UserStore extends Model({
           method: 'PATCH',
         }),
       );
-      console.log('JSON.stringify(updatedUser):', JSON.stringify(updatedUser));
       if (response.ok) {
         alert('Updated profile successfully');
       } else {

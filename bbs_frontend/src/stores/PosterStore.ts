@@ -46,7 +46,7 @@ export class PosterStore extends Model({
   deletePoster = _async(function* (userId: number) {
     try {
       const response = yield* _await(
-        fetch(`${process.env.REACT_APP_BASE_API_URL}/posters/${userId}`, {
+        fetch(`${process.env.REACT_APP_BASE_API_URL}/posters/${userId}/`, {
           body: JSON.stringify({ user: userId }),
           headers: {
             'Content-Type': 'application/json',
