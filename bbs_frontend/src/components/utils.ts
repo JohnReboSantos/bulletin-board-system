@@ -1,23 +1,73 @@
 import { useCallback, useEffect, useMemo } from 'react';
 import { useStore } from '../stores/RootStore';
 
-export const useGetBoardName = () => {
+export const useGetPosts = () => {
   const rootStore = useStore();
+
+  const getPosts = useCallback(async () => {
+    try {
+      await rootStore.posts.getPosts();
+    } catch (error) {
+      console.error('Error getting posts:', error);
+    }
+  }, [rootStore.posts]);
+
+  useEffect(() => {
+    getPosts();
+  }, [getPosts]);
+
+  const memoizedPosts = useMemo(
+    () => rootStore.posts.posts,
+    [rootStore.posts.posts],
+  );
+
+  return memoizedPosts;
+};
+
+export const useGetThreads = () => {
+  const rootStore = useStore();
+
+  const getThreads = useCallback(async () => {
+    try {
+      await rootStore.threads.getThreads();
+    } catch (error) {
+      console.error('Error getting threads:', error);
+    }
+  }, [rootStore.threads]);
+
+  useEffect(() => {
+    getThreads();
+  }, [getThreads]);
+
+  const memoizedThreads = useMemo(
+    () => rootStore.threads.threads,
+    [rootStore.threads.threads],
+  );
+
+  return memoizedThreads;
+};
+
+export const useGetBoards = () => {
+  const rootStore = useStore();
+
+  const getBoards = useCallback(async () => {
+    try {
+      await rootStore.boards.getBoards();
+    } catch (error) {
+      console.error('Error getting boards:', error);
+    }
+  }, [rootStore.boards]);
+
+  useEffect(() => {
+    getBoards();
+  }, [getBoards]);
 
   const memoizedBoards = useMemo(
     () => rootStore.boards.boards,
     [rootStore.boards.boards],
   );
 
-  const getBoardName = useCallback(
-    (boardId: number) => {
-      const board = memoizedBoards.find((board) => board.id === boardId);
-      return board ? board.name : '';
-    },
-    [memoizedBoards],
-  );
-
-  return getBoardName;
+  return memoizedBoards;
 };
 
 export const useGetThreadTitle = () => {
@@ -37,6 +87,20 @@ export const useGetThreadTitle = () => {
   );
 
   return getThreadTitle;
+};
+
+export const useGetBoardName = () => {
+  const boards = useGetBoards();
+
+  const getBoardName = useCallback(
+    (boardId: number) => {
+      const board = boards.find((board) => board.id === boardId);
+      return board ? board.name : '';
+    },
+    [boards],
+  );
+
+  return getBoardName;
 };
 
 export const useGetUsername = () => {

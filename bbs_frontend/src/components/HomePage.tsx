@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import localForage from 'localforage';
 import { observer } from 'mobx-react-lite';
@@ -14,6 +14,7 @@ import {
 } from 'react-bootstrap';
 import '../App.css';
 import { useStore } from '../stores/RootStore';
+import { useGetPosts, useGetThreads } from './utils';
 
 const HomePage: React.FC<{
   boards: {
@@ -25,6 +26,8 @@ const HomePage: React.FC<{
   }[];
 }> = ({ boards }) => {
   const rootStore = useStore();
+  const posts = useGetPosts();
+  const threads = useGetThreads();
   const IsAdmin = useIsAdmin();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [formData, setFormData] = useState({
@@ -47,29 +50,6 @@ const HomePage: React.FC<{
     getUser();
   }, [getUser]);
 
-  const getThreadsAndPosts = useCallback(async () => {
-    try {
-      await rootStore.threads.getThreads();
-      await rootStore.posts.getPosts();
-    } catch (error) {
-      console.error('Error getting threads and posts:', error);
-    }
-  }, [rootStore.posts, rootStore.threads]);
-
-  useEffect(() => {
-    getThreadsAndPosts();
-  }, [getThreadsAndPosts]);
-
-  const memoizedThreads = useMemo(
-    () => rootStore.threads.threads,
-    [rootStore.threads.threads],
-  );
-
-  const memoizedPosts = useMemo(
-    () => rootStore.posts.posts,
-    [rootStore.posts.posts],
-  );
-
   const getNumberOfThreads = useCallback(
     (board: {
       id: number;
@@ -77,8 +57,8 @@ const HomePage: React.FC<{
       topic: string;
       description: string;
       createdAt: string;
-    }) => memoizedThreads.filter((thread) => thread.board === board.id).length,
-    [memoizedThreads],
+    }) => threads.filter((thread) => thread.board === board.id).length,
+    [threads],
   );
 
   const getNumberOfPosts = useCallback(
@@ -89,12 +69,12 @@ const HomePage: React.FC<{
       description: string;
       createdAt: string;
     }) =>
-      memoizedPosts.filter((post) =>
-        memoizedThreads.some(
+      posts.filter((post) =>
+        threads.some(
           (thread) => thread.board === board.id && post.thread === thread.id,
         ),
       ).length,
-    [memoizedPosts, memoizedThreads],
+    [posts, threads],
   );
 
   const handleCreateBoard = useCallback(
