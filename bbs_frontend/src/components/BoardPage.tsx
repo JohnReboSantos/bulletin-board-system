@@ -37,6 +37,7 @@ const BoardPage: React.FC<{
   const isPoster = useIsPoster();
   const getUsername = useGetUsername();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // const [currentPage, setCurrentPage] = useState(1);
   const [formData, setFormData] = useState({
     title: '',
     board: board.id,

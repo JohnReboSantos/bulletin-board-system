@@ -42,6 +42,7 @@ const ProfilePage = ({
   const isPoster = useIsPoster();
   const [isCurrentUser, setIsCurrentUser] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
   const [formData, setFormData] = useState({
     id: user.id,
     username: user.username,
@@ -136,13 +137,23 @@ const ProfilePage = ({
       });
   }, []);
 
+  const postsPerPage = 20;
+  const totalPages = useMemo(() => {
+    const filteredPosts = posts.filter((post) => post.createdBy === user.id);
+    const pages = Math.ceil(filteredPosts.length / postsPerPage);
+    return pages;
+  }, [posts, user.id]);
+
   const renderPosts = useCallback(() => {
     const filteredPosts = posts.filter((post) => post.createdBy === user.id);
     const sortedPosts = filteredPosts.sort(
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     );
-    return sortedPosts.map((post) => (
+    const indexOfLastPost = currentPage * postsPerPage;
+    const indexOfFirstPost = indexOfLastPost - postsPerPage;
+    const currentPosts = sortedPosts.slice(indexOfFirstPost, indexOfLastPost);
+    return currentPosts.map((post) => (
       <ListGroup.Item key={post.id}>
         <div>{post.message}</div>
         <div>
@@ -150,7 +161,7 @@ const ProfilePage = ({
         </div>
       </ListGroup.Item>
     ));
-  }, [posts, user.id]);
+  }, [currentPage, posts, user.id]);
 
   return (
     <div>
@@ -325,17 +336,20 @@ const ProfilePage = ({
         <h4 className="mt-4">Posts</h4>
         <Card>
           <ListGroup variant="flush">{renderPosts()}</ListGroup>
+          <Pagination className="mt-3">
+            {Array.from({ length: totalPages }, (_, index) => index + 1).map(
+              (pageNumber) => (
+                <Pagination.Item
+                  key={pageNumber}
+                  active={pageNumber === currentPage}
+                  onClick={() => setCurrentPage(pageNumber)}
+                >
+                  {pageNumber}
+                </Pagination.Item>
+              ),
+            )}
+          </Pagination>
         </Card>
-        <Pagination className="mt-3">
-          <Pagination.First />
-          <Pagination.Prev />
-          <Pagination.Item active>{1}</Pagination.Item>
-          <Pagination.Item>{2}</Pagination.Item>
-          <Pagination.Item>{3}</Pagination.Item>
-          <Pagination.Ellipsis />
-          <Pagination.Next />
-          <Pagination.Last />
-        </Pagination>
       </div>
     </div>
   );
