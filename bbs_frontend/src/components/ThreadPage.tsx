@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useState } from 'react';
+import React, { useEffect, useCallback, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../stores/RootStore';
@@ -34,6 +34,7 @@ const ThreadPage: React.FC<{
   const getBoardName = useGetBoardName();
   const getUsername = useGetUsername();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
   const [formData, setFormData] = useState({
     thread: thread.id,
     message: '',
@@ -91,15 +92,24 @@ const ThreadPage: React.FC<{
       });
   }, []);
 
+  const postsPerPage = 20;
+  const totalPages = useMemo(() => {
+    const filteredPosts = posts.filter((post) => post.thread === thread.id);
+    const pages = Math.ceil(filteredPosts.length / postsPerPage);
+    return pages;
+  }, [posts, thread.id]);
+
   const renderPosts = useCallback(() => {
     const filteredPosts = posts.filter((post) => post.thread === thread.id);
-
     const sortedPosts = filteredPosts.sort(
       (a, b) =>
         new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
     );
+    const indexOfLastPost = currentPage * postsPerPage;
+    const indexOfFirstPost = indexOfLastPost - postsPerPage;
+    const currentPosts = sortedPosts.slice(indexOfFirstPost, indexOfLastPost);
 
-    return sortedPosts.map((post) => (
+    return currentPosts.map((post) => (
       <ListGroup.Item key={post.id}>
         <div className="d-flex justify-content-between align-items-center">
           <Link to={`/user_${post.createdBy}`}>
@@ -112,7 +122,7 @@ const ThreadPage: React.FC<{
         <div className="mt-2">{post.message}</div>
       </ListGroup.Item>
     ));
-  }, [getUsername, posts, thread.id]);
+  }, [currentPage, getUsername, posts, thread.id]);
 
   return (
     <div>
@@ -145,6 +155,19 @@ const ThreadPage: React.FC<{
         <h4>Board: {getBoardName(thread.board)}</h4>
         <Card>
           <ListGroup variant="flush">{renderPosts()}</ListGroup>
+          <Pagination className="mt-3">
+            {Array.from({ length: totalPages }, (_, index) => index + 1).map(
+              (pageNumber) => (
+                <Pagination.Item
+                  key={pageNumber}
+                  active={pageNumber === currentPage}
+                  onClick={() => setCurrentPage(pageNumber)}
+                >
+                  {pageNumber}
+                </Pagination.Item>
+              ),
+            )}
+          </Pagination>
         </Card>
         {isLoggedIn && !thread.locked && (
           <div className="reply-form">
@@ -170,16 +193,6 @@ const ThreadPage: React.FC<{
             </Form>
           </div>
         )}
-        <Pagination className="mt-3">
-          <Pagination.First />
-          <Pagination.Prev />
-          <Pagination.Item active>{1}</Pagination.Item>
-          <Pagination.Item>{2}</Pagination.Item>
-          <Pagination.Item>{3}</Pagination.Item>
-          <Pagination.Ellipsis />
-          <Pagination.Next />
-          <Pagination.Last />
-        </Pagination>
       </div>
     </div>
   );
