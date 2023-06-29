@@ -78,6 +78,7 @@ const ProfilePage = ({
       }) => {
         try {
           await rootStore.user.patchUser(user);
+          await rootStore.user.getUser();
         } catch (error) {
           console.error('Error updating profile:', error);
         }

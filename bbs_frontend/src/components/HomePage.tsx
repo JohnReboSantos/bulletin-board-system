@@ -53,10 +53,6 @@ const HomePage: React.FC<{
   }, [getUser]);
 
   const currentUser = useMemo(() => rootStore.user.user, [rootStore.user.user]);
-  console.log(
-    'avatar in homepage:',
-    `${process.env.REACT_APP_BASE_URL}${currentUser.avatar}`,
-  );
 
   const getNumberOfThreads = useCallback(
     (boardId: number) =>

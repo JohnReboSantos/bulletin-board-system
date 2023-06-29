@@ -18,6 +18,7 @@ import {
   useGetBoardName,
   useGetUsername,
   convertToHumanizedTimestamp,
+  useGetUsers,
 } from './utils';
 
 const ThreadPage: React.FC<{
@@ -32,6 +33,7 @@ const ThreadPage: React.FC<{
   };
 }> = ({ thread }) => {
   const rootStore = useStore();
+  const users = useGetUsers();
   const posts = useGetPosts();
   const getBoardName = useGetBoardName();
   const getUsername = useGetUsername();
@@ -115,6 +117,11 @@ const ThreadPage: React.FC<{
 
     return currentPosts.map((post) => (
       <ListGroup.Item key={post.id}>
+        <Image
+          src={`${users.find((user) => user.id === post.createdBy)?.avatar}`}
+          roundedCircle
+          className="avatar"
+        />
         <div className="d-flex justify-content-between align-items-center">
           <Link to={`/user_${post.createdBy}`}>
             <div>{getUsername(post.createdBy)}</div>
@@ -126,7 +133,7 @@ const ThreadPage: React.FC<{
         <div className="mt-2">{post.message}</div>
       </ListGroup.Item>
     ));
-  }, [currentPage, getUsername, posts, thread.id]);
+  }, [currentPage, getUsername, posts, thread.id, users]);
 
   return (
     <div>
