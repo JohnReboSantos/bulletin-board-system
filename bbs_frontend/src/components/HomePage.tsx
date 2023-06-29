@@ -11,7 +11,9 @@ import {
   Tooltip,
   Form,
   Navbar,
+  Image,
 } from 'react-bootstrap';
+import './NavBar.css';
 import '../App.css';
 import { useStore } from '../stores/RootStore';
 import { useGetPosts, useGetThreads } from './utils';
@@ -51,6 +53,10 @@ const HomePage: React.FC<{
   }, [getUser]);
 
   const currentUser = useMemo(() => rootStore.user.user, [rootStore.user.user]);
+  console.log(
+    'avatar in homepage:',
+    `${process.env.REACT_APP_BASE_URL}${currentUser.avatar}`,
+  );
 
   const getNumberOfThreads = useCallback(
     (boardId: number) =>
@@ -157,11 +163,24 @@ const HomePage: React.FC<{
         <Navbar.Collapse id="navbar-nav">
           {isLoggedIn ? (
             <Navbar.Collapse className="justify-content-end">
-              <Link to="/">
-                <Button variant="primary" onClick={handleLogout}>
+              <div className="d-flex align-items-center">
+                <Image
+                  src={`${process.env.REACT_APP_BASE_URL}${currentUser.avatar}`}
+                  roundedCircle
+                  className="avatar"
+                />
+                <div className="ml-2">Hello {currentUser.username}!</div>
+                <Link to={`/user_${currentUser.id}`} className="ml-2">
+                  <Button variant="primary">Profile</Button>
+                </Link>
+                <Button
+                  variant="primary"
+                  onClick={handleLogout}
+                  className="ml-2"
+                >
                   Log out
                 </Button>
-              </Link>
+              </div>
             </Navbar.Collapse>
           ) : (
             <Navbar.Collapse className="justify-content-end">

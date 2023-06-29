@@ -19,7 +19,9 @@ import {
   Form,
   Navbar,
   Button,
+  Image,
 } from 'react-bootstrap';
+import './NavBar.css';
 
 const BoardPage: React.FC<{
   board: {
@@ -58,6 +60,8 @@ const BoardPage: React.FC<{
   useEffect(() => {
     getUser();
   }, [getUser]);
+
+  const currentUser = useMemo(() => rootStore.user.user, [rootStore.user.user]);
 
   const getLastReply = useCallback(
     (threadId: number) => {
@@ -173,7 +177,7 @@ const BoardPage: React.FC<{
         <div className="mt-2">
           <small>{getLastReply(thread.id)}</small>
         </div>
-        {!thread.locked && isAdminOrMod(rootStore.user.user.id) && (
+        {!thread.locked && isAdminOrMod(currentUser.id) && (
           <Button
             variant="secondary"
             onClick={() => handleUpdateThread(thread.id, true, thread.sticky)}
@@ -181,7 +185,7 @@ const BoardPage: React.FC<{
             Lock
           </Button>
         )}
-        {thread.locked && isAdminOrMod(rootStore.user.user.id) && (
+        {thread.locked && isAdminOrMod(currentUser.id) && (
           <Button
             variant="secondary"
             onClick={() => handleUpdateThread(thread.id, false, thread.sticky)}
@@ -189,7 +193,7 @@ const BoardPage: React.FC<{
             Unlock
           </Button>
         )}
-        {!thread.sticky && isAdminOrMod(rootStore.user.user.id) && (
+        {!thread.sticky && isAdminOrMod(currentUser.id) && (
           <Button
             variant="secondary"
             onClick={() => handleUpdateThread(thread.id, thread.locked, true)}
@@ -197,7 +201,7 @@ const BoardPage: React.FC<{
             Stickify
           </Button>
         )}
-        {thread.sticky && isAdminOrMod(rootStore.user.user.id) && (
+        {thread.sticky && isAdminOrMod(currentUser.id) && (
           <Button
             variant="secondary"
             onClick={() => handleUpdateThread(thread.id, thread.locked, false)}
@@ -211,11 +215,11 @@ const BoardPage: React.FC<{
     board.id,
     board.name,
     currentPage,
+    currentUser.id,
     getLastReply,
     handleUpdateThread,
     isAdminOrMod,
     posts,
-    rootStore.user.user.id,
     threads,
   ]);
 
@@ -227,11 +231,24 @@ const BoardPage: React.FC<{
         <Navbar.Collapse id="navbar-nav">
           {isLoggedIn ? (
             <Navbar.Collapse className="justify-content-end">
-              <Link to="/">
-                <Button variant="primary" onClick={handleLogout}>
+              <div className="d-flex align-items-center">
+                <Image
+                  src={`${process.env.REACT_APP_BASE_URL}${currentUser.avatar}`}
+                  roundedCircle
+                  className="avatar"
+                />
+                <div className="ml-2">Hello {currentUser.username}!</div>
+                <Link to={`/user_${currentUser.id}`} className="ml-2">
+                  <Button variant="primary">Profile</Button>
+                </Link>
+                <Button
+                  variant="primary"
+                  onClick={handleLogout}
+                  className="ml-2"
+                >
                   Log out
                 </Button>
-              </Link>
+              </div>
             </Navbar.Collapse>
           ) : (
             <Navbar.Collapse className="justify-content-end">

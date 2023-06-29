@@ -39,7 +39,7 @@ class CustomUserManager(BaseUserManager):
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
-    avatar = models.ImageField(upload_to='avatars/', blank=True, default='images/default.png')
+    avatar = models.ImageField(upload_to='avatars/', blank=True, default='default.png')
     email = models.EmailField(unique=True)
     username = models.CharField(max_length=255, unique=True)
     about_myself = models.TextField()
