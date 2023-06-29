@@ -11,6 +11,8 @@ import {
   Button,
   Navbar,
   Image,
+  OverlayTrigger,
+  Tooltip,
 } from 'react-bootstrap';
 import './NavBar.css';
 import {
@@ -60,6 +62,25 @@ const ThreadPage: React.FC<{
   }, [getUser]);
 
   const currentUser = useMemo(() => rootStore.user.user, [rootStore.user.user]);
+
+  const renderTooltip = useCallback(
+    (userId: number) => (
+      <Tooltip>
+        <Card.Title>
+          {users.find((user) => userId === user.id)?.username}
+        </Card.Title>
+        <Card.Text>
+          {users.find((user) => userId === user.id)?.aboutMyself}
+        </Card.Text>
+        <ListGroup>
+          <ListGroup.Item>
+            Posts: {posts.filter((post) => post.createdBy === userId).length}
+          </ListGroup.Item>{' '}
+        </ListGroup>
+      </Tooltip>
+    ),
+    [posts, users],
+  );
 
   const handlePostReply = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
@@ -123,9 +144,15 @@ const ThreadPage: React.FC<{
           className="avatar"
         />
         <div className="d-flex justify-content-between align-items-center">
-          <Link to={`/user_${post.createdBy}`}>
-            <div>{getUsername(post.createdBy)}</div>
-          </Link>
+          <OverlayTrigger
+            key={post.id}
+            placement="bottom"
+            overlay={renderTooltip(post.createdBy)}
+          >
+            <Link to={`/user_${post.createdBy}`}>
+              <div>{getUsername(post.createdBy)}</div>
+            </Link>
+          </OverlayTrigger>
           <div>
             <small>{convertToHumanizedTimestamp(post.createdAt)}</small>
           </div>
@@ -133,7 +160,7 @@ const ThreadPage: React.FC<{
         <div className="mt-2">{post.message}</div>
       </ListGroup.Item>
     ));
-  }, [currentPage, getUsername, posts, thread.id, users]);
+  }, [currentPage, getUsername, posts, renderTooltip, thread.id, users]);
 
   return (
     <div>
