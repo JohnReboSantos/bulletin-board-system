@@ -3,6 +3,7 @@ from rest_framework import serializers
 from django.core.exceptions import ValidationError
 from .models import CustomUser, Board, Thread, Post, Administrator, Moderator, Poster
 
+
 class Base64ImageField(serializers.ImageField):
     """
     A Django REST framework field for handling image-uploads through raw post data.
@@ -23,22 +24,25 @@ class Base64ImageField(serializers.ImageField):
         # Check if this is a base64 string
         if isinstance(data, six.string_types):
             # Check if the base64 string is in the "data:" format
-            if 'data:' in data and ';base64,' in data:
+            if "data:" in data and ";base64," in data:
                 # Break out the header from the base64 content
-                header, data = data.split(';base64,')
+                header, data = data.split(";base64,")
 
             # Try to decode the file. Return validation error if it fails.
             try:
                 decoded_file = base64.b64decode(data)
             except TypeError:
-                self.fail('invalid_image')
+                self.fail("invalid_image")
 
             # Generate file name:
-            file_name = str(uuid.uuid4())[:12] # 12 characters are more than enough.
+            file_name = str(uuid.uuid4())[:12]  # 12 characters are more than enough.
             # Get the file name extension:
             file_extension = self.get_file_extension(file_name, decoded_file)
 
-            complete_file_name = "%s.%s" % (file_name, file_extension, )
+            complete_file_name = "%s.%s" % (
+                file_name,
+                file_extension,
+            )
 
             data = ContentFile(decoded_file, name=complete_file_name)
 
@@ -52,15 +56,29 @@ class Base64ImageField(serializers.ImageField):
 
         return extension
 
+
 class UserSerializer(serializers.ModelSerializer):
     avatar = Base64ImageField(
-        max_length=None, use_url=True,
+        max_length=None,
+        use_url=True,
     )
 
     class Meta:
         model = CustomUser
-        fields = ('id', 'avatar', 'username', 'email', 'about_myself', 'date_of_birth', 'hometown', 'present_location', 'website', 'gender', 'interests')
-    
+        fields = (
+            "id",
+            "avatar",
+            "username",
+            "email",
+            "about_myself",
+            "date_of_birth",
+            "hometown",
+            "present_location",
+            "website",
+            "gender",
+            "interests",
+        )
+
     def validate_email(self, value):
         if self.instance and self.instance.email == value:
             return value  # Skip validation for the same email
@@ -72,7 +90,9 @@ class UserSerializer(serializers.ModelSerializer):
         if self.instance and self.instance.username == value:
             return value  # Skip validation for the same username
         if CustomUser.objects.filter(username=value).exists():
-            raise serializers.ValidationError("A user with that username already exists.")
+            raise serializers.ValidationError(
+                "A user with that username already exists."
+            )
         return value
 
     def validate(self, data):
@@ -82,8 +102,7 @@ class UserSerializer(serializers.ModelSerializer):
 
         # Validate date of birth format (YYYY-MM-DD)
         try:
-            birth_date = datetime.strptime(
-                str(date_of_birth), "%Y-%m-%d").date()
+            birth_date = datetime.strptime(str(date_of_birth), "%Y-%m-%d").date()
         except ValueError:
             raise serializers.ValidationError(
                 "Invalid date of birth format. Must be YYYY-MM-DD."
@@ -92,8 +111,7 @@ class UserSerializer(serializers.ModelSerializer):
         # Validate birth date is in the past
         today = date.today()
         if birth_date > today:
-            raise serializers.ValidationError(
-                "Birth date must be in the past.")
+            raise serializers.ValidationError("Birth date must be in the past.")
 
         return data
 
@@ -101,7 +119,7 @@ class UserSerializer(serializers.ModelSerializer):
 class BoardSerializer(serializers.ModelSerializer):
     class Meta:
         model = Board
-        fields = ('id', 'name', 'topic', 'description', 'created_at')
+        fields = ("id", "name", "topic", "description", "created_at")
 
     def validate_name(self, value):
         # Check if a board with the same name already exists
@@ -113,36 +131,47 @@ class BoardSerializer(serializers.ModelSerializer):
 class ThreadSerializer(serializers.ModelSerializer):
     class Meta:
         model = Thread
-        fields = ('id', 'title', 'board', 'created_by', 'created_at', 'locked', 'sticky')
-    
+        fields = (
+            "id",
+            "title",
+            "board",
+            "created_by",
+            "created_at",
+            "locked",
+            "sticky",
+        )
+
     def validate(self, attrs):
-        board = attrs.get('board')
-        title = attrs.get('title')
+        board = attrs.get("board")
+        title = attrs.get("title")
 
         # Check if a thread with the same board and title already exists
         if Thread.objects.filter(board=board, title=title).exists():
-            raise serializers.ValidationError("A thread with the same board and title already exists.")
+            raise serializers.ValidationError(
+                "A thread with the same board and title already exists."
+            )
         return attrs
 
 
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = ('id', 'thread', 'created_by', 'created_at', 'message')
+        fields = ("id", "thread", "created_by", "created_at", "message")
 
 
 class AdministratorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Administrator
-        fields = ('user',)
+        fields = ("user",)
 
 
 class ModeratorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Moderator
-        fields = ('user',)
+        fields = ("user",)
+
 
 class PosterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Poster
-        fields = ('user',)
+        fields = ("user",)

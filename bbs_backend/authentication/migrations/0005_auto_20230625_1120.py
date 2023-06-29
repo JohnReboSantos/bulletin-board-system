@@ -4,30 +4,29 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('authentication', '0004_alter_customuser_gender'),
+        ("authentication", "0004_alter_customuser_gender"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='customuser',
-            name='date_of_birth',
+            model_name="customuser",
+            name="date_of_birth",
             field=models.DateField(),
         ),
         migrations.AlterField(
-            model_name='customuser',
-            name='gender',
+            model_name="customuser",
+            name="gender",
             field=models.CharField(blank=True, max_length=10, null=True),
         ),
         migrations.AlterField(
-            model_name='customuser',
-            name='interests',
+            model_name="customuser",
+            name="interests",
             field=models.TextField(blank=True, null=True),
         ),
         migrations.AlterField(
-            model_name='customuser',
-            name='website',
+            model_name="customuser",
+            name="website",
             field=models.URLField(blank=True, null=True),
         ),
     ]

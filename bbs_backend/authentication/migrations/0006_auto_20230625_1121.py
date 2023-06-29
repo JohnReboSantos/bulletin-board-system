@@ -4,25 +4,24 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('authentication', '0005_auto_20230625_1120'),
+        ("authentication", "0005_auto_20230625_1120"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='customuser',
-            name='about_myself',
+            model_name="customuser",
+            name="about_myself",
             field=models.TextField(),
         ),
         migrations.AlterField(
-            model_name='customuser',
-            name='hometown',
+            model_name="customuser",
+            name="hometown",
             field=models.CharField(max_length=100),
         ),
         migrations.AlterField(
-            model_name='customuser',
-            name='present_location',
+            model_name="customuser",
+            name="present_location",
             field=models.CharField(max_length=100),
         ),
     ]

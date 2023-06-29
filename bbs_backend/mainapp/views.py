@@ -12,7 +12,7 @@ from .serializers import (
     PostSerializer,
     AdministratorSerializer,
     ModeratorSerializer,
-    PosterSerializer
+    PosterSerializer,
 )
 
 

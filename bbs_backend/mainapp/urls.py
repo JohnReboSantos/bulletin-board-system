@@ -1,6 +1,14 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import UserViewSet, BoardViewSet, ThreadViewSet, PostViewSet, AdministratorViewSet, ModeratorViewSet, PosterViewSet
+from .views import (
+    UserViewSet,
+    BoardViewSet,
+    ThreadViewSet,
+    PostViewSet,
+    AdministratorViewSet,
+    ModeratorViewSet,
+    PosterViewSet,
+)
 
 
 router = DefaultRouter()

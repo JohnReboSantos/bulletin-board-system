@@ -26,22 +26,25 @@ class Base64ImageField(serializers.ImageField):
         # Check if this is a base64 string
         if isinstance(data, six.string_types):
             # Check if the base64 string is in the "data:" format
-            if 'data:' in data and ';base64,' in data:
+            if "data:" in data and ";base64," in data:
                 # Break out the header from the base64 content
-                header, data = data.split(';base64,')
+                header, data = data.split(";base64,")
 
             # Try to decode the file. Return validation error if it fails.
             try:
                 decoded_file = base64.b64decode(data)
             except TypeError:
-                self.fail('invalid_image')
+                self.fail("invalid_image")
 
             # Generate file name:
-            file_name = str(uuid.uuid4())[:12] # 12 characters are more than enough.
+            file_name = str(uuid.uuid4())[:12]  # 12 characters are more than enough.
             # Get the file name extension:
             file_extension = self.get_file_extension(file_name, decoded_file)
 
-            complete_file_name = "%s.%s" % (file_name, file_extension, )
+            complete_file_name = "%s.%s" % (
+                file_name,
+                file_extension,
+            )
 
             data = ContentFile(decoded_file, name=complete_file_name)
 
@@ -55,6 +58,7 @@ class Base64ImageField(serializers.ImageField):
 
         return extension
 
+
 class AllowUnauthenticated(permissions.BasePermission):
     def has_permission(self):
         # Allow unauthenticated requests
@@ -66,7 +70,8 @@ class RegisterSerializer(serializers.ModelSerializer):
     password1 = serializers.CharField(write_only=True)
     password2 = serializers.CharField(write_only=True)
     avatar = Base64ImageField(
-        max_length=None, use_url=True,
+        max_length=None,
+        use_url=True,
     )
 
     class Meta:
@@ -83,7 +88,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             "present_location",
             "website",
             "gender",
-            "interests"
+            "interests",
         )
 
     def validate(self, data):
@@ -95,13 +100,13 @@ class RegisterSerializer(serializers.ModelSerializer):
 
         # Validate if a user with the email already exists
         if CustomUser.objects.filter(email=email).exists():
-            raise serializers.ValidationError(
-                "A user with that email already exists.")
+            raise serializers.ValidationError("A user with that email already exists.")
 
         # Validate if a user with the username already exists
         if CustomUser.objects.filter(username=username).exists():
             raise serializers.ValidationError(
-                "A user with that username already exists.")
+                "A user with that username already exists."
+            )
 
         # Validate password match
         if password1 != password2:
@@ -115,8 +120,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
         # Validate date of birth format (YYYY-MM-DD)
         try:
-            birth_date = datetime.strptime(
-                str(date_of_birth), "%Y-%m-%d").date()
+            birth_date = datetime.strptime(str(date_of_birth), "%Y-%m-%d").date()
         except ValueError:
             raise serializers.ValidationError(
                 "Invalid date of birth format. Must be YYYY-MM-DD."
@@ -125,8 +129,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         # Validate birth date is in the past
         today = date.today()
         if birth_date > today:
-            raise serializers.ValidationError(
-                "Birth date must be in the past.")
+            raise serializers.ValidationError("Birth date must be in the past.")
 
         # Save the password to the 'password' field
         data["password"] = password1
@@ -157,7 +160,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             present_location=present_location,
             website=website,
             gender=gender,
-            interests=interests
+            interests=interests,
         )
 
         return user
@@ -182,5 +185,16 @@ class LoginSerializer(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['id', 'avatar', 'username', 'email', 'about_myself', 'date_of_birth',
-                  'hometown', 'present_location', 'website', 'gender', 'interests']
+        fields = [
+            "id",
+            "avatar",
+            "username",
+            "email",
+            "about_myself",
+            "date_of_birth",
+            "hometown",
+            "present_location",
+            "website",
+            "gender",
+            "interests",
+        ]

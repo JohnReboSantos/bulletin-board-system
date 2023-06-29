@@ -26,6 +26,7 @@ class LoginAPIView(KnoxLoginView):
             }
         )
 
+
 class GetUserDataAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -79,7 +80,7 @@ class RegisterAPIView(APIView):
                 "present_location": present_location,
                 "website": website,
                 "gender": gender,
-                "interests": interests
+                "interests": interests,
             }
         )
         serializer.is_valid(raise_exception=True)
@@ -89,7 +90,11 @@ class RegisterAPIView(APIView):
 
         return Response(
             {
-                "user_info": {"id": user.id, "username": user.username, "email": user.email},
+                "user_info": {
+                    "id": user.id,
+                    "username": user.username,
+                    "email": user.email,
+                },
                 "token": token,
             }
         )
