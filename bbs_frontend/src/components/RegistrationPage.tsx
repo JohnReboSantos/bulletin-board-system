@@ -9,6 +9,7 @@ const RegistrationPage = () => {
   const [isRegistered, setIsRegistered] = useState(false);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
+    avatar: '',
     username: '',
     email: '',
     password1: '',
@@ -25,9 +26,10 @@ const RegistrationPage = () => {
   const handleSubmit = useCallback(
     async (e: any) => {
       e.preventDefault();
-      console.log(formData);
+      console.log('RegPage formData:', formData);
 
       const register = async (user: {
+        avatar: string;
         username: string;
         email: string;
         password1: string;
@@ -82,7 +84,25 @@ const RegistrationPage = () => {
       </Navbar>
       <div className="registration-page">
         <h2>Registration</h2>
-        <Form onSubmit={handleSubmit}>
+        <Form onSubmit={handleSubmit} encType="multipart/form-data">
+          <Form.Group controlId="formAvatar">
+            <Form.Label>Avatar Picture</Form.Label>
+            <Form.Control
+              type="file"
+              onChange={(e) => {
+                const file = (e.target as HTMLInputElement).files?.[0];
+                if (file) {
+                  const reader = new FileReader();
+                  reader.onloadend = () => {
+                    const dataURL = reader.result as string;
+                    setFormData({ ...formData, avatar: dataURL });
+                  };
+                  reader.readAsDataURL(file);
+                }
+              }}
+            />
+          </Form.Group>
+
           <Form.Group controlId="formEmail">
             <Form.Label>Email</Form.Label>
             <Form.Control

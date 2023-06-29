@@ -24,6 +24,7 @@ const ProfilePage = ({
 }: {
   user: {
     id: number;
+    avatar: string;
     username: string;
     email: string;
     aboutMyself: string;
@@ -44,6 +45,7 @@ const ProfilePage = ({
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [formData, setFormData] = useState({
+    avatar: '',
     id: user.id,
     username: user.username,
     email: user.email,
@@ -61,6 +63,7 @@ const ProfilePage = ({
       e.preventDefault();
       const updateProfile = async (user: {
         id: number;
+        avatar: string;
         username: string;
         email: string;
         aboutMyself: string;
@@ -196,7 +199,25 @@ const ProfilePage = ({
             <Card.Text>Email: {user.email}</Card.Text>
             {isCurrentUser && (
               <div className="profile-form">
-                <Form onSubmit={handleSubmit}>
+                <Form onSubmit={handleSubmit} encType="multipart/form-data">
+                  <Form.Group controlId="formAvatar">
+                    <Form.Label>Avatar Picture</Form.Label>
+                    <Form.Control
+                      type="file"
+                      onChange={(e) => {
+                        const file = (e.target as HTMLInputElement).files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            const dataURL = reader.result as string;
+                            setFormData({ ...formData, avatar: dataURL });
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                  </Form.Group>
+
                   <Form.Group controlId="formUsername">
                     <Form.Label>Email</Form.Label>
                     <Form.Control

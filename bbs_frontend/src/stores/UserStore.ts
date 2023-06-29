@@ -3,6 +3,7 @@ import localForage from 'localforage';
 
 interface User {
   id: number;
+  avatar: string;
   username: string;
   email: string;
   aboutMyself: string;
@@ -37,6 +38,7 @@ export class UserStore extends Model({
       const data = yield* _await(response.json());
       const updatedUser: User = {
         id: data.id,
+        avatar: data.avatar,
         username: data.username,
         email: data.email,
         aboutMyself: data.about_myself,
@@ -52,6 +54,7 @@ export class UserStore extends Model({
       console.log('Error getting user:', error);
       this.user = {
         id: 0,
+        avatar: '',
         username: '',
         email: '',
         aboutMyself: '',
@@ -67,6 +70,7 @@ export class UserStore extends Model({
 
   @modelFlow
   register = _async(function* (user: {
+    avatar: string;
     username: string;
     email: string;
     password1: string;
@@ -80,25 +84,22 @@ export class UserStore extends Model({
     interests: string;
   }) {
     try {
-      const updatedUser = {
-        username: user.username,
-        email: user.email,
-        password1: user.password1,
-        password2: user.password2,
-        about_myself: user.aboutMyself,
-        date_of_birth: user.dateOfBirth,
-        hometown: user.hometown,
-        present_location: user.presentLocation,
-        website: user.website,
-        gender: user.gender,
-        interests: user.interests,
-      };
+      const formData = new FormData();
+      formData.append('avatar', user.avatar);
+      formData.append('username', user.username);
+      formData.append('email', user.email);
+      formData.append('password1', user.password1);
+      formData.append('password2', user.password2);
+      formData.append('about_myself', user.aboutMyself);
+      formData.append('date_of_birth', user.dateOfBirth);
+      formData.append('hometown', user.hometown);
+      formData.append('present_location', user.presentLocation);
+      formData.append('website', user.website);
+      formData.append('gender', user.gender);
+      formData.append('interests', user.interests);
       const response = yield* _await(
         fetch(`${process.env.REACT_APP_BASE_AUTH_URL}/registration/`, {
-          body: JSON.stringify(updatedUser),
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          body: formData,
           method: 'POST',
         }),
       );
@@ -165,23 +166,22 @@ export class UserStore extends Model({
   @modelFlow
   patchUser = _async(function* (user: User) {
     try {
-      const updatedUser = {
-        username: user.username,
-        email: user.email,
-        about_myself: user.aboutMyself,
-        date_of_birth: user.dateOfBirth,
-        hometown: user.hometown,
-        present_location: user.presentLocation,
-        website: user.website,
-        gender: user.gender,
-        interests: user.interests,
-      };
+      const formData = new FormData();
+      if (user.avatar !== '') {
+        formData.append('avatar', user.avatar);
+      }
+      formData.append('username', user.username);
+      formData.append('email', user.email);
+      formData.append('about_myself', user.aboutMyself);
+      formData.append('date_of_birth', user.dateOfBirth);
+      formData.append('hometown', user.hometown);
+      formData.append('present_location', user.presentLocation);
+      formData.append('website', user.website);
+      formData.append('gender', user.gender);
+      formData.append('interests', user.interests);
       const response = yield* _await(
         fetch(`${process.env.REACT_APP_BASE_API_URL}/users/${user.id}/`, {
-          body: JSON.stringify(updatedUser),
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          body: formData,
           method: 'PATCH',
         }),
       );
@@ -191,7 +191,7 @@ export class UserStore extends Model({
         alert('Failed Network Request: ' + response.statusText);
       }
     } catch (error) {
-      console.log('PRofile update error:', error);
+      console.log('Profile update error:', error);
     }
   });
 }

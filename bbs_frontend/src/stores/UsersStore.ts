@@ -2,6 +2,7 @@ import { model, Model, prop, modelFlow, _async, _await } from 'mobx-keystone';
 
 interface User {
   id: number;
+  avatar: string;
   username: string;
   email: string;
   aboutMyself: string;
@@ -27,6 +28,7 @@ export class UsersStore extends Model({
       const updatedData = data.map(
         (user: {
           id: number;
+          avatar: string;
           username: string;
           email: string;
           about_myself: string;
@@ -38,6 +40,7 @@ export class UsersStore extends Model({
           interests: string;
         }) => ({
           id: user.id,
+          avatar: user.avatar,
           username: user.username,
           email: user.email,
           aboutMyself: user.about_myself,

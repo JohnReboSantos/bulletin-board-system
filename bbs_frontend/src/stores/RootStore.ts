@@ -31,6 +31,7 @@ function createRootStore() {
     key: '',
     user: {
       id: 0,
+      avatar: '',
       username: '',
       email: '',
       aboutMyself: '',
