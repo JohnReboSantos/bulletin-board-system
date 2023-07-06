@@ -14,8 +14,8 @@ import './NavBar.css';
 import {
   convertToHumanizedTimestamp,
   useIsAdmin,
-  useIsAdminOrMod,
-  useIsPoster,
+  useIsBanned,
+  useIsMod,
 } from './utils';
 import { useStore } from '../stores/RootStore';
 import { Link } from 'react-router-dom';
@@ -36,13 +36,15 @@ const ProfilePage = ({
     website: string;
     gender: string;
     interests: string;
+    role: string;
+    banned: boolean;
   };
 }) => {
   const rootStore = useStore();
   const posts = useGetPosts();
-  const IsAdmin = useIsAdmin();
-  const isAdminOrMod = useIsAdminOrMod();
-  const isPoster = useIsPoster();
+  const isAdmin = useIsAdmin();
+  const isModerator = useIsMod();
+  const isBanned = useIsBanned();
   const [isCurrentUser, setIsCurrentUser] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -58,6 +60,8 @@ const ProfilePage = ({
     website: user.website,
     gender: user.gender,
     interests: user.interests,
+    role: user.role,
+    banned: user.banned
   });
 
   const handleSubmit = useCallback(
@@ -75,6 +79,8 @@ const ProfilePage = ({
         website: string;
         gender: string;
         interests: string;
+        role: string;
+        banned: boolean
       }) => {
         try {
           await rootStore.user.patchUser(user);
@@ -342,9 +348,9 @@ const ProfilePage = ({
             )}
           </Card.Body>
         </Card>
-        {isPoster(user.id) &&
-          isAdminOrMod(currentUser.id) &&
-          !IsAdmin(user.id) &&
+        {!isBanned(user.id) &&
+          isModerator(currentUser.id) &&
+          !isAdmin(user.id) &&
           currentUser.id !== user.id && (
             <div>
               <Button
@@ -356,9 +362,9 @@ const ProfilePage = ({
               </Button>
             </div>
           )}
-        {!isPoster(user.id) &&
-          isAdminOrMod(currentUser.id) &&
-          !IsAdmin(user.id) &&
+        {isBanned(user.id) &&
+          isModerator(currentUser.id) &&
+          !isAdmin(user.id) &&
           currentUser.id !== user.id && (
             <div>
               <Button

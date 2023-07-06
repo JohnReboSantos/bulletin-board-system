@@ -270,7 +270,7 @@ const BoardPage: React.FC<{
             )}
           </Pagination>
         </Card>
-        {isBanned(currentUser.id) && (
+        {!isBanned(currentUser.id) && (
           <div className="createthread-form">
             <Form onSubmit={handleCreateThread}>
               <Form.Group controlId="createThread">
