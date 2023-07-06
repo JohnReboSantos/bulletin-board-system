@@ -49,7 +49,6 @@ const RegistrationPage = () => {
             password: user.password1,
           });
           await rootStore.user.getUser();
-          await rootStore.posters.postPoster(rootStore.user.user.id);
           rootStore.user.user.id
             ? setIsRegistered(true)
             : setIsRegistered(false);
@@ -60,7 +59,7 @@ const RegistrationPage = () => {
 
       register(formData);
     },
-    [formData, rootStore.posters, rootStore.user],
+    [formData, rootStore.user],
   );
 
   useEffect(() => {

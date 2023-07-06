@@ -83,7 +83,7 @@ const ProfilePage = ({
         banned: boolean
       }) => {
         try {
-          await rootStore.user.patchUser(user);
+          await rootStore.user.updateProfile(user);
           await rootStore.user.getUser();
         } catch (error) {
           console.error('Error updating profile:', error);
@@ -97,25 +97,25 @@ const ProfilePage = ({
   const handleBan = useCallback(
     async (userId: number) => {
       try {
-        await rootStore.posters.deletePoster(userId);
-        await rootStore.posters.getPosters();
+        await rootStore.user.banUser(userId);
+        await rootStore.users.getUsers();
       } catch (error) {
         console.error('Error banning user:', error);
       }
     },
-    [rootStore.posters],
+    [rootStore.user, rootStore.users],
   );
 
   const handleUnban = useCallback(
     async (userId: number) => {
       try {
-        await rootStore.posters.postPoster(userId);
-        await rootStore.posters.getPosters();
+        await rootStore.user.unbanUser(userId);
+        await rootStore.users.getUsers();
       } catch (error) {
         console.error('Error banning user:', error);
       }
     },
-    [rootStore.posters],
+    [rootStore.user, rootStore.users],
   );
 
   const getUser = useCallback(async () => {

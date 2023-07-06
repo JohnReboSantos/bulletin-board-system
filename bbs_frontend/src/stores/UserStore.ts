@@ -170,7 +170,7 @@ export class UserStore extends Model({
   });
 
   @modelFlow
-  patchUser = _async(function* (user: User) {
+  updateProfile = _async(function* (user: User) {
     try {
       const formData = new FormData();
       if (user.avatar !== '') {
@@ -185,8 +185,6 @@ export class UserStore extends Model({
       formData.append('website', user.website);
       formData.append('gender', user.gender);
       formData.append('interests', user.interests);
-      formData.append('role', user.role);
-      formData.append('banned', user.banned);
       const response = yield* _await(
         fetch(`${process.env.REACT_APP_BASE_API_URL}/users/${user.id}/`, {
           body: formData,
@@ -200,6 +198,44 @@ export class UserStore extends Model({
       }
     } catch (error) {
       console.log('Profile update error:', error);
+    }
+  });
+
+  @modelFlow
+  banUser = _async(function* (userId: number) {
+    try {
+      const response = yield* _await(
+        fetch(`${process.env.REACT_APP_BASE_API_URL}/users/${userId}/`, {
+          body: JSON.stringify({banned: true}),
+          method: 'PATCH',
+        }),
+      );
+      if (response.ok) {
+        alert('User banned successfully');
+      } else {
+        alert('Failed Network Request: ' + response.statusText);
+      }
+    } catch (error) {
+      console.log('Ban error:', error);
+    }
+  });
+
+  @modelFlow
+  unbanUser = _async(function* (userId: number) {
+    try {
+      const response = yield* _await(
+        fetch(`${process.env.REACT_APP_BASE_API_URL}/users/${userId}/`, {
+          body: JSON.stringify({banned: false}),
+          method: 'PATCH',
+        }),
+      );
+      if (response.ok) {
+        alert('User unbanned successfully');
+      } else {
+        alert('Failed Network Request: ' + response.statusText);
+      }
+    } catch (error) {
+      console.log('Unban error:', error);
     }
   });
 }
