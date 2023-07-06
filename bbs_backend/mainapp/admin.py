@@ -1,10 +1,5 @@
 from django.contrib import admin
-from .models import Administrator, Moderator, Poster, Board, Thread, Post
-
-
-admin.site.register(Administrator)
-admin.site.register(Moderator)
-admin.site.register(Poster)
+from .models import Board, Thread, Post
 
 
 class BoardAdmin(admin.ModelAdmin):

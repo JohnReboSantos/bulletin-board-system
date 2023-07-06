@@ -1,7 +1,7 @@
 from datetime import datetime, date
 from rest_framework import serializers
 from django.core.exceptions import ValidationError
-from .models import CustomUser, Board, Thread, Post, Administrator, Moderator, Poster
+from .models import CustomUser, Board, Thread, Post
 
 
 class Base64ImageField(serializers.ImageField):
@@ -77,6 +77,8 @@ class UserSerializer(serializers.ModelSerializer):
             "website",
             "gender",
             "interests",
+            "role",
+            "banned"
         )
 
     def validate_email(self, value):
@@ -157,21 +159,3 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ("id", "thread", "created_by", "created_at", "message")
-
-
-class AdministratorSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Administrator
-        fields = ("user",)
-
-
-class ModeratorSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Moderator
-        fields = ("user",)
-
-
-class PosterSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Poster
-        fields = ("user",)

@@ -3,27 +3,6 @@ from django.contrib.auth.models import AbstractUser
 from authentication.models import CustomUser
 
 
-class Administrator(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True)
-
-    def __str__(self):
-        return f"Administrator: {self.user.username}"
-
-
-class Moderator(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True)
-
-    def __str__(self):
-        return f"Moderator: {self.user.username}"
-
-
-class Poster(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True)
-
-    def __str__(self):
-        return f"Poster: {self.user.username}"
-
-
 class Board(models.Model):
     name = models.CharField(max_length=100)
     topic = models.CharField(max_length=100)

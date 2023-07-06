@@ -4,15 +4,12 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from authentication.models import CustomUser
 from knox.auth import AuthToken
-from .models import Board, Thread, Post, Administrator, Moderator, Poster
+from .models import Board, Thread, Post
 from .serializers import (
     UserSerializer,
     BoardSerializer,
     ThreadSerializer,
     PostSerializer,
-    AdministratorSerializer,
-    ModeratorSerializer,
-    PosterSerializer,
 )
 
 
@@ -34,18 +31,3 @@ class ThreadViewSet(viewsets.ModelViewSet):
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-
-
-class AdministratorViewSet(viewsets.ModelViewSet):
-    queryset = Administrator.objects.all()
-    serializer_class = AdministratorSerializer
-
-
-class ModeratorViewSet(viewsets.ModelViewSet):
-    queryset = Moderator.objects.all()
-    serializer_class = ModeratorSerializer
-
-
-class PosterViewSet(viewsets.ModelViewSet):
-    queryset = Poster.objects.all()
-    serializer_class = PosterSerializer

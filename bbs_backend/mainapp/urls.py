@@ -5,9 +5,6 @@ from .views import (
     BoardViewSet,
     ThreadViewSet,
     PostViewSet,
-    AdministratorViewSet,
-    ModeratorViewSet,
-    PosterViewSet,
 )
 
 
@@ -16,9 +13,6 @@ router.register("users", UserViewSet)
 router.register("boards", BoardViewSet)
 router.register("threads", ThreadViewSet)
 router.register("posts", PostViewSet)
-router.register("administrators", AdministratorViewSet)
-router.register("moderators", ModeratorViewSet)
-router.register("posters", PosterViewSet)
 
 urlpatterns = [
     path("", include(router.urls)),
