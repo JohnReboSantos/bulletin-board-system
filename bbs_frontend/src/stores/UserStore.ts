@@ -13,6 +13,8 @@ interface User {
   website: string;
   gender: string;
   interests: string;
+  role: string;
+  banned: boolean;
 }
 
 @model('UserStore')
@@ -48,6 +50,8 @@ export class UserStore extends Model({
         website: data.website,
         gender: data.gender,
         interests: data.interests,
+        role: data.role,
+        banned: data.banned
       };
       this.user = updatedUser;
     } catch (error) {
@@ -64,6 +68,8 @@ export class UserStore extends Model({
         website: '',
         gender: '',
         interests: '',
+        role: 'poster',
+        banned: false
       };
     }
   });
@@ -179,6 +185,8 @@ export class UserStore extends Model({
       formData.append('website', user.website);
       formData.append('gender', user.gender);
       formData.append('interests', user.interests);
+      formData.append('role', user.role);
+      formData.append('banned', user.banned);
       const response = yield* _await(
         fetch(`${process.env.REACT_APP_BASE_API_URL}/users/${user.id}/`, {
           body: formData,
