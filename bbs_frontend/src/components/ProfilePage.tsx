@@ -13,9 +13,8 @@ import {
 import './NavBar.css';
 import {
   convertToHumanizedTimestamp,
-  useIsAdmin,
+  useGetUserRole,
   useIsBanned,
-  useIsMod,
 } from './utils';
 import { useStore } from '../stores/RootStore';
 import { Link } from 'react-router-dom';
@@ -42,8 +41,7 @@ const ProfilePage = ({
 }) => {
   const rootStore = useStore();
   const posts = useGetPosts();
-  const isAdmin = useIsAdmin();
-  const isModerator = useIsMod();
+  const getUserRole = useGetUserRole();
   const isBanned = useIsBanned();
   const [isCurrentUser, setIsCurrentUser] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -133,7 +131,7 @@ const ProfilePage = ({
 
   useEffect(() => {
     getUser();
-  }, [getUser]);
+  }, [getUser, getUserRole]);
 
   const currentUser = useMemo(() => rootStore.user.user, [rootStore.user.user]);
 
@@ -349,8 +347,8 @@ const ProfilePage = ({
           </Card.Body>
         </Card>
         {isLoggedIn && !isBanned(user.id) &&
-          isModerator(currentUser.id) &&
-          !isAdmin(user.id) &&
+          (getUserRole(currentUser.id) === ('moderator' || 'admin')) &&
+          getUserRole(user.id) !== 'admin' &&
           currentUser.id !== user.id && (
             <div>
               <Button
@@ -363,8 +361,8 @@ const ProfilePage = ({
             </div>
           )}
         {isLoggedIn && isBanned(user.id) &&
-          isModerator(currentUser.id) &&
-          !isAdmin(user.id) &&
+          (getUserRole(currentUser.id) === ('moderator' || 'admin')) &&
+          getUserRole(user.id) !== 'admin' &&
           currentUser.id !== user.id && (
             <div>
               <Button

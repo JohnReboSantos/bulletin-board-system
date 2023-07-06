@@ -88,9 +88,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             "present_location",
             "website",
             "gender",
-            "interests",
-            "role",
-            "banned"
+            "interests"
         )
 
     def validate(self, data):

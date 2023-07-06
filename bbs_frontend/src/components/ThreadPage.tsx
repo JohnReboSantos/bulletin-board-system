@@ -21,6 +21,7 @@ import {
   useGetUsername,
   convertToHumanizedTimestamp,
   useGetUsers,
+  useIsBanned,
 } from './utils';
 
 const ThreadPage: React.FC<{
@@ -37,6 +38,7 @@ const ThreadPage: React.FC<{
   const rootStore = useStore();
   const users = useGetUsers();
   const posts = useGetPosts();
+  const isBanned = useIsBanned();
   const getBoardName = useGetBoardName();
   const getUsername = useGetUsername();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -203,6 +205,7 @@ const ThreadPage: React.FC<{
       </Navbar>
       <div className="thread-index-page">
         <h2>{thread.title}</h2>
+        {thread.locked && <span className="text-danger">Locked</span>}
         <h4>Board: {getBoardName(thread.board)}</h4>
         <Card>
           <ListGroup variant="flush">{renderPosts()}</ListGroup>
@@ -220,7 +223,7 @@ const ThreadPage: React.FC<{
             )}
           </Pagination>
         </Card>
-        {isLoggedIn && !thread.locked && (
+        {isLoggedIn && !thread.locked && !isBanned(currentUser.id) && (
           <div className="reply-form">
             <Form onSubmit={handlePostReply}>
               <Form.Group controlId="postMessage">

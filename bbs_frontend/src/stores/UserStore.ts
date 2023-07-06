@@ -103,6 +103,9 @@ export class UserStore extends Model({
       formData.append('website', user.website);
       formData.append('gender', user.gender);
       formData.append('interests', user.interests);
+      for (let [key, value] of formData.entries()) {
+        console.log(`${key}: ${value}`);
+      }
       const response = yield* _await(
         fetch(`${process.env.REACT_APP_BASE_AUTH_URL}/registration/`, {
           body: formData,

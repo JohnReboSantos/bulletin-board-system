@@ -26,7 +26,6 @@ const RegistrationPage = () => {
   const handleSubmit = useCallback(
     async (e: any) => {
       e.preventDefault();
-      console.log('RegPage formData:', formData);
 
       const register = async (user: {
         avatar: string;

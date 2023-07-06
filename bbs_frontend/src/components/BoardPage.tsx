@@ -9,8 +9,8 @@ import {
   useGetUsername,
   convertToHumanizedTimestamp,
   getSortedThreads,
-  useIsMod,
   useIsBanned,
+  useGetUserRole,
 } from './utils';
 import {
   Card,
@@ -34,7 +34,7 @@ const BoardPage: React.FC<{
 }> = ({ board }) => {
   const rootStore = useStore();
   const isBanned = useIsBanned();
-  const isMod = useIsMod();
+  const getUserRole = useGetUserRole();
   const posts = useGetPosts();
   const threads = useGetThreads();
   const getUsername = useGetUsername();
@@ -177,7 +177,7 @@ const BoardPage: React.FC<{
         <div className="mt-2">
           <small>{getLastReply(thread.id)}</small>
         </div>
-        {isLoggedIn && !thread.locked && isMod(currentUser.id) && (
+        {isLoggedIn && !thread.locked && (getUserRole(currentUser.id) === ('moderator' || 'admin')) && (
           <Button
             variant="secondary"
             onClick={() => handleUpdateThread(thread.id, true, thread.sticky)}
@@ -185,7 +185,7 @@ const BoardPage: React.FC<{
             Lock
           </Button>
         )}
-        {isLoggedIn && thread.locked && isMod(currentUser.id) && (
+        {isLoggedIn && thread.locked && (getUserRole(currentUser.id) === ('moderator' || 'admin')) && (
           <Button
             variant="secondary"
             onClick={() => handleUpdateThread(thread.id, false, thread.sticky)}
@@ -193,7 +193,7 @@ const BoardPage: React.FC<{
             Unlock
           </Button>
         )}
-        {isLoggedIn && !thread.sticky && isMod(currentUser.id) && (
+        {isLoggedIn && !thread.sticky && (getUserRole(currentUser.id) === ('moderator' || 'admin')) && (
           <Button
             variant="secondary"
             onClick={() => handleUpdateThread(thread.id, thread.locked, true)}
@@ -201,7 +201,7 @@ const BoardPage: React.FC<{
             Stickify
           </Button>
         )}
-        {isLoggedIn && thread.sticky && isMod(currentUser.id) && (
+        {isLoggedIn && thread.sticky && (getUserRole(currentUser.id) === ('moderator' || 'admin')) && (
           <Button
             variant="secondary"
             onClick={() => handleUpdateThread(thread.id, thread.locked, false)}
@@ -211,7 +211,7 @@ const BoardPage: React.FC<{
         )}
       </ListGroup.Item>
     ));
-  }, [board.id, board.name, currentPage, currentUser.id, getLastReply, handleUpdateThread, isLoggedIn, isMod, posts, threads]);
+  }, [board.id, board.name, currentPage, currentUser.id, getLastReply, getUserRole, handleUpdateThread, isLoggedIn, posts, threads]);
 
   return (
     <div>

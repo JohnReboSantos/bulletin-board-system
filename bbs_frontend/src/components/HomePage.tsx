@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import localForage from 'localforage';
 import { observer } from 'mobx-react-lite';
-import { useIsAdmin } from './utils';
 import {
   Button,
   Card,
@@ -16,7 +15,7 @@ import {
 import './NavBar.css';
 import '../App.css';
 import { useStore } from '../stores/RootStore';
-import { useGetPosts, useGetThreads } from './utils';
+import { useGetPosts, useGetThreads, useGetUserRole } from './utils';
 
 const HomePage: React.FC<{
   boards: {
@@ -30,7 +29,7 @@ const HomePage: React.FC<{
   const rootStore = useStore();
   const posts = useGetPosts();
   const threads = useGetThreads();
-  const isAdmin = useIsAdmin();
+  const getUserRole = useGetUserRole();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -192,7 +191,7 @@ const HomePage: React.FC<{
       </Navbar>
 
       <div className="board-list">
-        {isAdmin(currentUser.id) &&
+        {getUserRole(currentUser.id) === 'admin' &&
           Object.entries(groupedBoards).map(([topic, boards]) => (
             <div key={topic}>
               <h3>{topic}</h3>
@@ -225,7 +224,7 @@ const HomePage: React.FC<{
               ))}
             </div>
           ))}
-        {!isAdmin(currentUser.id) &&
+        {getUserRole(currentUser.id) !== 'admin' &&
           boards.map((board) => (
             <div key={board.id}>
               <OverlayTrigger
@@ -246,7 +245,7 @@ const HomePage: React.FC<{
               </OverlayTrigger>
             </div>
           ))}
-        {isAdmin(currentUser.id) && (
+        {getUserRole(currentUser.id) === 'admin' && (
           <div className="createboard-form">
             <Form onSubmit={handleCreateBoard}>
               <Form.Group controlId="formBoardName">
