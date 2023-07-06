@@ -5,12 +5,11 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '../stores/RootStore';
 import {
   useGetThreads,
-  useIsPoster,
-  useIsAdminOrMod,
   useGetPosts,
   useGetUsername,
   convertToHumanizedTimestamp,
   getSortedThreads,
+  useGetUsers,
 } from './utils';
 import {
   Card,
@@ -33,10 +32,9 @@ const BoardPage: React.FC<{
   };
 }> = ({ board }) => {
   const rootStore = useStore();
+  const users = useGetUsers();
   const posts = useGetPosts();
   const threads = useGetThreads();
-  const isAdminOrMod = useIsAdminOrMod();
-  const isPoster = useIsPoster();
   const getUsername = useGetUsername();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);

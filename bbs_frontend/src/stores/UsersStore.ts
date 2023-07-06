@@ -12,6 +12,8 @@ interface User {
   website: string;
   gender: string;
   interests: string;
+  role: string;
+  banned: boolean;
 }
 
 @model('UsersStore')

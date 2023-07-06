@@ -146,117 +146,6 @@ export const useGetUsername = () => {
   return getUsername;
 };
 
-export const useIsPoster = () => {
-  const rootStore = useStore();
-
-  const getPosters = useCallback(async () => {
-    try {
-      await rootStore.posters.getPosters();
-    } catch (error) {
-      console.error('Error getting posters:', error);
-    }
-  }, [rootStore.posters]);
-
-  useEffect(() => {
-    getPosters();
-  }, [getPosters]);
-
-  const memoizedPosters = useMemo(
-    () => rootStore.posters.posters,
-    [rootStore.posters.posters],
-  );
-
-  const isPoster = useCallback(
-    (userId: number) => {
-      const poster = memoizedPosters.find((poster) => poster.user === userId);
-      return poster ? true : false;
-    },
-    [memoizedPosters],
-  );
-
-  return isPoster;
-};
-
-export const useIsAdmin = () => {
-  const rootStore = useStore();
-
-  const getAdministrators = useCallback(async () => {
-    try {
-      await rootStore.administrators.getAdministrators();
-    } catch (error) {
-      console.error('Error getting admins:', error);
-    }
-  }, [rootStore.administrators]);
-
-  useEffect(() => {
-    getAdministrators();
-  }, [getAdministrators]);
-
-  const memoizedAdmins = useMemo(
-    () => rootStore.administrators.administrators,
-    [rootStore.administrators.administrators],
-  );
-
-  const isAdmin = useCallback(
-    (userId: number) => {
-      const admin = memoizedAdmins.find((admin) => admin.user === userId);
-      return admin ? true : false;
-    },
-    [memoizedAdmins],
-  );
-
-  return isAdmin;
-};
-
-export const useIsAdminOrMod = () => {
-  const rootStore = useStore();
-
-  const getAdministrators = useCallback(async () => {
-    try {
-      await rootStore.administrators.getAdministrators();
-    } catch (error) {
-      console.error('Error getting admins:', error);
-    }
-  }, [rootStore.administrators]);
-
-  useEffect(() => {
-    getAdministrators();
-  }, [getAdministrators]);
-
-  const memoizedAdmins = useMemo(
-    () => rootStore.administrators.administrators,
-    [rootStore.administrators.administrators],
-  );
-
-  const getModerators = useCallback(async () => {
-    try {
-      await rootStore.moderators.getModerators();
-    } catch (error) {
-      console.error('Error getting mods:', error);
-    }
-  }, [rootStore.moderators]);
-
-  useEffect(() => {
-    getModerators();
-  }, [getModerators]);
-
-  const memoizedMods = useMemo(
-    () => rootStore.moderators.moderators,
-    [rootStore.moderators.moderators],
-  );
-
-  const isAdminOrMod = useCallback(
-    (userId: number) => {
-      const admin = memoizedAdmins.find((admin) => admin.user === userId);
-      const mod = memoizedMods.find((mod) => mod.user === userId);
-      return admin || mod ? true : false;
-    },
-    [memoizedAdmins, memoizedMods],
-  );
-
-  return isAdminOrMod;
-};
-
 export const getSortedThreads = (
   filteredThreads: {
     id: number;
@@ -306,3 +195,36 @@ export const getSortedThreads = (
   );
   return [...sortedThreadsWithPosts, ...sortedThreadsWithoutPosts];
 };
+
+export const useIsAdmin = () => {
+  const users = useGetUsers();
+
+  const isAdmin = useCallback((userId: number) => {
+    const admin = users.find((user) => user.id === userId && user.role === 'admin')
+    return !!admin;
+  }, [users])
+
+  return isAdmin
+}
+
+export const useIsMod = () => {
+  const users = useGetUsers();
+
+  const isModerator = useCallback((userId: number) => {
+    const moderator = users.find((user) => user.id === userId && user.role === 'moderator')
+    return !!moderator;
+  }, [users])
+
+  return isModerator
+}
+
+export const useIsBanned = () => {
+  const users = useGetUsers();
+
+  const isBanned = useCallback((userId: number) => {
+    const bannedUser = users.find((user) => user.id === userId && user.banned === true)
+    return !!bannedUser;
+  }, [users])
+
+  return isBanned
+}
