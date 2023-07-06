@@ -53,6 +53,8 @@ class RegisterAPIView(APIView):
             website = request.POST.get("website")
             gender = request.POST.get("gender")
             interests = request.POST.get("interests")
+            role = request.POST.get("role")
+            banned = request.POST.get("banned")
         else:  # Assuming JSON format
             avatar = data.get("avatar")
             username = data.get("username")
@@ -66,6 +68,8 @@ class RegisterAPIView(APIView):
             website = data.get("website")
             gender = data.get("gender")
             interests = data.get("interests")
+            role = data.get("role")
+            banned = data.get("banned")
 
         serializer = RegisterSerializer(
             data={
@@ -81,6 +85,8 @@ class RegisterAPIView(APIView):
                 "website": website,
                 "gender": gender,
                 "interests": interests,
+                "role": role,
+                "banned": banned,
             }
         )
         serializer.is_valid(raise_exception=True)

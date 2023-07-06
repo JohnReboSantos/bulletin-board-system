@@ -21,6 +21,8 @@ class CustomUserAdmin(UserAdmin):
                     "website",
                     "gender",
                     "interests",
+                    "role",
+                    "banned"
                 )
             },
         ),
@@ -52,6 +54,8 @@ class CustomUserAdmin(UserAdmin):
                     "website",
                     "gender",
                     "interests",
+                    "role",
+                    "banned"
                 ),
             },
         ),

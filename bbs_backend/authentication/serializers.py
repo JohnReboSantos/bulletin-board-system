@@ -89,6 +89,8 @@ class RegisterSerializer(serializers.ModelSerializer):
             "website",
             "gender",
             "interests",
+            "role",
+            "banned"
         )
 
     def validate(self, data):
@@ -148,6 +150,8 @@ class RegisterSerializer(serializers.ModelSerializer):
         website = validated_data.get("website")
         gender = validated_data.get("gender")
         interests = validated_data.get("interests")
+        role = validated_data.get("role")
+        banned = validated_data.get("banned")
 
         user = CustomUser.objects.create_user(
             avatar=avatar,
@@ -161,6 +165,8 @@ class RegisterSerializer(serializers.ModelSerializer):
             website=website,
             gender=gender,
             interests=interests,
+            role=role,
+            banned=banned
         )
 
         return user
@@ -197,4 +203,6 @@ class UserSerializer(serializers.ModelSerializer):
             "website",
             "gender",
             "interests",
+            "role",
+            "banned"
         ]

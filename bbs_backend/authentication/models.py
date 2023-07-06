@@ -16,6 +16,8 @@ class CustomUserManager(BaseUserManager):
         date_of_birth,
         hometown,
         present_location,
+        role,
+        banned,
         website=None,
         gender=None,
         interests=None,
@@ -37,6 +39,8 @@ class CustomUserManager(BaseUserManager):
             gender=gender,
             interests=interests,
             password=password,
+            role=role,
+            banned=banned
         )
 
         user.set_password(password)
@@ -52,6 +56,8 @@ class CustomUserManager(BaseUserManager):
         date_of_birth,
         hometown,
         present_location,
+        role,
+        banned,
         website=None,
         gender=None,
         interests=None,
@@ -68,6 +74,8 @@ class CustomUserManager(BaseUserManager):
             gender,
             interests,
             password,
+            role,
+            banned
         )
         user.is_staff = True
         user.is_superuser = True
@@ -76,6 +84,12 @@ class CustomUserManager(BaseUserManager):
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
+    ROLE_CHOICES = (
+        ('admin', 'Admin'),
+        ('moderator', 'Moderator'),
+        ('poster', 'Poster'),
+    )
+
     avatar = models.ImageField(upload_to="avatars/", blank=True, default="default.png")
     email = models.EmailField(unique=True)
     username = models.CharField(max_length=255, unique=True)
@@ -86,6 +100,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     website = models.URLField(null=True, blank=True)
     gender = models.CharField(max_length=10, null=True, blank=True)
     interests = models.TextField(blank=True, null=True)
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='poster')
+    banned = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
@@ -103,6 +119,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         "website",
         "gender",
         "interests",
+        "role",
+        "banned"
     ]
 
     def __str__(self):
