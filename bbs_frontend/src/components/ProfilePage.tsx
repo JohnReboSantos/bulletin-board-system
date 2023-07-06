@@ -348,7 +348,7 @@ const ProfilePage = ({
             )}
           </Card.Body>
         </Card>
-        {!isBanned(user.id) &&
+        {isLoggedIn && !isBanned(user.id) &&
           isModerator(currentUser.id) &&
           !isAdmin(user.id) &&
           currentUser.id !== user.id && (
@@ -362,7 +362,7 @@ const ProfilePage = ({
               </Button>
             </div>
           )}
-        {isBanned(user.id) &&
+        {isLoggedIn && isBanned(user.id) &&
           isModerator(currentUser.id) &&
           !isAdmin(user.id) &&
           currentUser.id !== user.id && (

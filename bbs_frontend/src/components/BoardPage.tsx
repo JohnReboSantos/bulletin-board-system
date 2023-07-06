@@ -177,7 +177,7 @@ const BoardPage: React.FC<{
         <div className="mt-2">
           <small>{getLastReply(thread.id)}</small>
         </div>
-        {!thread.locked && isMod(currentUser.id) && (
+        {isLoggedIn && !thread.locked && isMod(currentUser.id) && (
           <Button
             variant="secondary"
             onClick={() => handleUpdateThread(thread.id, true, thread.sticky)}
@@ -185,7 +185,7 @@ const BoardPage: React.FC<{
             Lock
           </Button>
         )}
-        {thread.locked && isMod(currentUser.id) && (
+        {isLoggedIn && thread.locked && isMod(currentUser.id) && (
           <Button
             variant="secondary"
             onClick={() => handleUpdateThread(thread.id, false, thread.sticky)}
@@ -193,7 +193,7 @@ const BoardPage: React.FC<{
             Unlock
           </Button>
         )}
-        {!thread.sticky && isMod(currentUser.id) && (
+        {isLoggedIn && !thread.sticky && isMod(currentUser.id) && (
           <Button
             variant="secondary"
             onClick={() => handleUpdateThread(thread.id, thread.locked, true)}
@@ -201,7 +201,7 @@ const BoardPage: React.FC<{
             Stickify
           </Button>
         )}
-        {thread.sticky && isMod(currentUser.id) && (
+        {isLoggedIn && thread.sticky && isMod(currentUser.id) && (
           <Button
             variant="secondary"
             onClick={() => handleUpdateThread(thread.id, thread.locked, false)}
@@ -270,7 +270,7 @@ const BoardPage: React.FC<{
             )}
           </Pagination>
         </Card>
-        {!isBanned(currentUser.id) && (
+        {isLoggedIn && !isBanned(currentUser.id) && (
           <div className="createthread-form">
             <Form onSubmit={handleCreateThread}>
               <Form.Group controlId="createThread">
