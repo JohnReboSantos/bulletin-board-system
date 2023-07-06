@@ -211,7 +211,7 @@ export const useIsMod = () => {
   const users = useGetUsers();
 
   const isModerator = useCallback((userId: number) => {
-    const moderator = users.find((user) => user.id === userId && user.role === 'moderator')
+    const moderator = users.find((user) => user.id === userId && user.role === 'moderator' || 'admin')
     return !!moderator;
   }, [users])
 
