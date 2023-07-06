@@ -97,26 +97,6 @@ class UserSerializer(serializers.ModelSerializer):
             )
         return value
 
-    def validate(self, data):
-        username = data.get("username")
-        email = data.get("email")
-        date_of_birth = data.get("date_of_birth")
-
-        # Validate date of birth format (YYYY-MM-DD)
-        try:
-            birth_date = datetime.strptime(str(date_of_birth), "%Y-%m-%d").date()
-        except ValueError:
-            raise serializers.ValidationError(
-                "Invalid date of birth format. Must be YYYY-MM-DD."
-            )
-
-        # Validate birth date is in the past
-        today = date.today()
-        if birth_date > today:
-            raise serializers.ValidationError("Birth date must be in the past.")
-
-        return data
-
 
 class BoardSerializer(serializers.ModelSerializer):
     class Meta:

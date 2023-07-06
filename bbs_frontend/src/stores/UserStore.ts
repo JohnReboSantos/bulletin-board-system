@@ -207,6 +207,9 @@ export class UserStore extends Model({
       const response = yield* _await(
         fetch(`${process.env.REACT_APP_BASE_API_URL}/users/${userId}/`, {
           body: JSON.stringify({banned: true}),
+          headers: {
+            'Content-Type': 'application/json',
+          },
           method: 'PATCH',
         }),
       );
@@ -214,6 +217,7 @@ export class UserStore extends Model({
         alert('User banned successfully');
       } else {
         alert('Failed Network Request: ' + response.statusText);
+        console.log(JSON.stringify({banned: true}))
       }
     } catch (error) {
       console.log('Ban error:', error);
@@ -226,6 +230,9 @@ export class UserStore extends Model({
       const response = yield* _await(
         fetch(`${process.env.REACT_APP_BASE_API_URL}/users/${userId}/`, {
           body: JSON.stringify({banned: false}),
+          headers: {
+            'Content-Type': 'application/json',
+          },
           method: 'PATCH',
         }),
       );

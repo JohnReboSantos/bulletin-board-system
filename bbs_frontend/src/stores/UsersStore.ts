@@ -40,6 +40,8 @@ export class UsersStore extends Model({
           website: string;
           gender: string;
           interests: string;
+          role: string;
+          banned: boolean;
         }) => ({
           id: user.id,
           avatar: user.avatar,
@@ -52,6 +54,8 @@ export class UsersStore extends Model({
           website: user.website,
           gender: user.gender,
           interests: user.interests,
+          role: user.role,
+          banned: user.banned
         }),
       );
       this.users = updatedData;

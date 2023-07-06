@@ -222,8 +222,8 @@ export const useIsBanned = () => {
   const users = useGetUsers();
 
   const isBanned = useCallback((userId: number) => {
-    const bannedUser = users.find((user) => user.id === userId && user.banned === true)
-    return !!bannedUser;
+    const user = users.find((user) => user.id === userId)
+    return user?.banned;
   }, [users])
 
   return isBanned

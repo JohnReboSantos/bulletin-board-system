@@ -211,7 +211,7 @@ const BoardPage: React.FC<{
         )}
       </ListGroup.Item>
     ));
-  }, [board.id, board.name, currentPage, currentUser.id, getLastReply, handleUpdateThread, isMod, posts, threads]);
+  }, [board.id, board.name, currentPage, currentUser.id, getLastReply, handleUpdateThread, isLoggedIn, isMod, posts, threads]);
 
   return (
     <div>
